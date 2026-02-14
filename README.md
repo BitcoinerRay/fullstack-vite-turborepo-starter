@@ -55,6 +55,50 @@ Details: [apps/vite-frontend/README.md](./apps/vite-frontend/README.md), [apps/n
 
 ---
 
+## Architecture & Configuration
+
+### Docker Strategy
+
+This template uses Docker **only for development infrastructure** (Postgres, Redis via Docker Compose).
+
+- ✅ `npm run infra:start` - Start databases locally
+- ✅ Frontend/Backend run on **host** for HMR and debugging
+- ❌ No application containerization (deploy using your preferred platform)
+
+**Why this approach:**
+
+- Fast HMR and hot reload during development
+- Native debugging experience
+- Deploy to Vercel/Netlify/Railway without Docker complexity
+- Infrastructure services isolated in containers
+
+### Turborepo Configuration
+
+Build and test caching is optimized with proper dependency chains:
+
+```json
+{
+  "test:unit": {
+    "dependsOn": ["^build"],
+    "outputs": ["coverage/**"]
+  }
+}
+```
+
+- Tests depend only on builds (no circular dependencies)
+- Coverage output is cached for faster CI runs
+- Parallel execution where possible
+
+### TypeScript Version
+
+All packages use **TypeScript 5.9.3** (latest stable). Unified version ensures:
+
+- Consistent type checking across monorepo
+- Predictable builds in CI/CD
+- Access to latest language features
+
+---
+
 ## Scripts
 
 | Command                                                | Description                                            |

@@ -18,4 +18,25 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    target: 'es2022',
+    sourcemap: false,
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-radix': [
+            '@radix-ui/react-alert-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-label',
+            '@radix-ui/react-navigation-menu',
+            '@radix-ui/react-select',
+            '@radix-ui/react-slot',
+          ],
+          'vendor-query': ['@tanstack/react-query', '@tanstack/react-query-devtools'],
+        },
+      },
+    },
+  },
 });

@@ -37,13 +37,16 @@
       "persistent": true
     },
     "test:unit": {
-      "dependsOn": ["^build", "^test:unit"]
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
     },
     "test:unit:cov": {
-      "dependsOn": ["^build", "^test:unit:cov"]
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
     },
     "test:e2e": {
-      "dependsOn": ["^build", "^test:e2e"]
+      "dependsOn": ["^build"],
+      "outputs": []
     }
   }
 }
