@@ -24,6 +24,7 @@
     "test:unit:cov": "turbo run test:unit:cov",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "init": "node scripts/init.js",
+    "copilot:sync": "node scripts/copilot-sync.js",
     "prepare": "husky"
   },
   "devDependencies": {
