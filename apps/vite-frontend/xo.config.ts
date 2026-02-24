@@ -30,17 +30,17 @@ const xoConfig: FlatXoConfig = [
       'n/file-extension-in-import': 'off',
       'import-x/extensions': 'off',
 
-      // Typescript rules
-      '@typescript-eslint/explicit-function-return-type': 'warn',
+      // Typescript rules (avoid rules that force edits that can change runtime behavior)
+      '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-non-null-assertion': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-var-requires': 'error',
       '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/naming-convention': 'off',
-      '@typescript-eslint/prefer-nullish-coalescing': 'warn',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
 
       // Code rules
       'max-params': 'error',

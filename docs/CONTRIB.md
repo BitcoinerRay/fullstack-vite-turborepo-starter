@@ -65,7 +65,7 @@ Source: `apps/nestjs-backend/.env.example`. Credentials should match root `.env`
 | NODE_ENV            | Environment         | development \| staging \| production      |
 | PORT                | API port            | number (default 4000)                     |
 | ENABLE_SWAGGER      | Swagger UI          | true \| false                             |
-| FRONTEND_HOST       | CORS origin         | URL (e.g. http://localhost:5173 for Vite) |
+| FRONTEND_HOST       | CORS origin         | URL (e.g. http://localhost:3000 for Vite) |
 | DATABASE_URL        | Postgres connection | postgresql://user:pass@host:port/db       |
 | REDIS_URL           | Redis connection    | redis://:pass@host:port                   |
 | POSTGRES_DEBUG_MODE | ORM debug           | true \| false                             |

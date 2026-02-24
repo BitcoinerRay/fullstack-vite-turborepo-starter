@@ -22,7 +22,7 @@ npm run dev:all        # start infra then dev in one command
 Per-app (from root):
 
 ```bash
-cd apps/vite-frontend && npm run dev     # frontend (e.g. port 5173)
+cd apps/vite-frontend && npm run dev     # frontend (e.g. port 3000)
 cd apps/nestjs-backend && npm run dev    # port 4000
 ```
 
@@ -41,7 +41,7 @@ npm run infra:ps
 - Build: `npm run build`
 - Run production: `npm run start:prod`
   - Backend: default port 4000
-  - Frontend: default port (Vite, e.g. 5173)
+  - Frontend: default port (Vite, e.g. 3000)
 
 Containerized builds (e.g. CI/CD): use `deploy/vite-frontend.dockerfile`, `deploy/vite-frontend.nginx.conf`, and `deploy/nestjs-backend.dockerfile` as needed; not required for daily dev.
 
@@ -61,7 +61,7 @@ Containerized builds (e.g. CI/CD): use `deploy/vite-frontend.dockerfile`, `deplo
 | CORS errors                                  | Set `FRONTEND_HOST` in `apps/nestjs-backend/.env` to frontend origin.                        |
 | Redis connection failed                      | `npm run infra:health`; `npm run infra:restart` if needed.                                   |
 | Shared package not found                     | Build packages: e.g. `cd packages/db && npm run build`; root `npm run build` builds all.     |
-| Port 5173 or 4000 in use                     | Stop conflicting process or change `PORT` (backend) / configure Vite server port (frontend). |
+| Port 3000 or 4000 in use                     | Stop conflicting process or change `PORT` (backend) / configure Vite server port (frontend). |
 
 ## Database Operations
 
