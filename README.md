@@ -22,7 +22,7 @@ cp apps/nestjs-backend/.env.example apps/nestjs-backend/.env
 npm run infra:start
 npm run infra:health   # wait until healthy
 
-cd packages/db && npm run db:generate && npm run migrate:deploy && cd ../..
+npm run build --workspace=@next-nest-turbo-auth-boilerplate/db && npm run build --workspace=@next-nest-turbo-auth-boilerplate/shared
 npm run dev
 ```
 
