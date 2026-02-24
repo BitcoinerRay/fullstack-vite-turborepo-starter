@@ -28,14 +28,14 @@ npm run dev
 
 Edit `apps/nestjs-backend/.env` so `DATABASE_URL` matches the Postgres settings in the root `.env`.
 
-**URLs:** Frontend http://localhost:5173 · Backend http://localhost:4000
+**URLs:** Frontend http://localhost:3000 · Backend http://localhost:4000
 
 ### Step-by-step
 
 1. Clone, then `npm install`.
 2. Copy `.env.example` → `.env` in repo root, `apps/vite-frontend`, and `apps/nestjs-backend`.
 3. `npm run infra:start` then `npm run infra:health` (Docker: Postgres, Redis).
-4. `cd packages/db && npm run db:generate && npm run migrate:deploy && cd ../..`
+4. `npm run build --workspace=@next-nest-turbo-auth-boilerplate/db && npm run build --workspace=@next-nest-turbo-auth-boilerplate/shared`
 5. `npm run dev` (Vite + NestJS in parallel).
 
 Infrastructure runs in Docker; apps run on the host for HMR and debugging.

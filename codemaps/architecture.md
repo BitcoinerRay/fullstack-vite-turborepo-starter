@@ -32,7 +32,7 @@ packages/
 ## Cross-App
 
 - **API prefix:** /api
-- **CORS:** FRONTEND_HOST (e.g. http://localhost:5173 for Vite dev)
+- **CORS:** FRONTEND_HOST (e.g. http://localhost:3000 for Vite dev)
 - **Swagger:** /api/docs (when ENABLE_SWAGGER=true)
 
 ## Deploy

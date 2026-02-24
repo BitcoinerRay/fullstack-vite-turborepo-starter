@@ -6,7 +6,7 @@
 
 - index.html → /src/main.tsx
 - main.tsx → ReactDOM.createRoot, RouterProvider, i18n/config, styles/globals.css
-- Dev server: Vite default port 5173
+- Dev server: Vite default port 3000
 
 ## Router
 
