@@ -1,34 +1,31 @@
-import {resolve} from 'node:path';
-import {config} from 'dotenv';
 import {Logger, ValidationPipe} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
 import {NestFactory} from '@nestjs/core';
 import {DocumentBuilder, OpenAPIObject, SwaggerModule} from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
 import helmet from 'helmet';
+import {ConfigKey} from './config/config-key.enum';
 import {AppModule} from './app.module';
 import {HttpExceptionFilter} from './common/filters/http-exception/http-exception.filter';
 import {PrismaExceptionFilter} from './common/filters/prisma-exception/prisma-exception.filter';
 import {Logger as LoggerService} from './common/logger/logger.service';
-
-for (const p of [
-  resolve(process.cwd(), '../../.env.example'),
-  resolve(process.cwd(), '../../.env'),
-  resolve(process.cwd(), '.env.example'),
-  resolve(process.cwd(), '.env'),
-])
-  config({path: p, override: true, quiet: true});
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
 
+  const configService = app.get(ConfigService);
+  const frontendHost = configService.get<string>(ConfigKey.FRONTEND_HOST) ?? 'http://localhost:3000';
+  const enableSwagger = configService.get<boolean>(ConfigKey.ENABLE_SWAGGER) ?? true;
+  const port = configService.get<number>(ConfigKey.PORT) ?? 4000;
+
   app.use(helmet());
   app.use(compression());
 
   app.enableCors({
-    origin: process.env.FRONTEND_HOST,
+    origin: frontendHost,
     credentials: true,
   });
 
@@ -48,7 +45,7 @@ async function bootstrap(): Promise<void> {
 
   app.useGlobalFilters(new HttpExceptionFilter(), new PrismaExceptionFilter());
 
-  if (process.env.ENABLE_SWAGGER === 'true') {
+  if (enableSwagger) {
     const swaggerConfig = new DocumentBuilder()
       .setTitle('nest auth boilerplate')
       .setDescription('The nest auth boilerplate API description')
@@ -58,9 +55,9 @@ async function bootstrap(): Promise<void> {
     SwaggerModule.setup('api/docs', app, documentFactory);
   }
 
-  await app.listen(process.env.PORT ?? 4000);
+  await app.listen(port);
 
-  if (process.env.ENABLE_SWAGGER === 'true') {
+  if (enableSwagger) {
     const logger = new Logger('bootstrap', {timestamp: true});
     logger.log(`Swagger is running on: ${await app.getUrl()}/api/docs`);
   }

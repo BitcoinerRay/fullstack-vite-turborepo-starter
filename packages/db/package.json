@@ -16,6 +16,9 @@
     "db:seed": "node --import ./scripts/load-env.mjs -e \"require('child_process').execSync('npx prisma db seed', {stdio:'inherit', env:process.env})\""
   },
   "prisma": {
+    "scripts": {
+      "seed": "node --import ./scripts/load-env.mjs -e \"require('child_process').execSync('npx prisma db seed', {stdio:'inherit', env:process.env})\""
+    },
     "seed": "tsx prisma/seed.ts"
   },
   "main": "./dist/index.js",

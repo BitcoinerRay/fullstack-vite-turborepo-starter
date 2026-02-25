@@ -3,7 +3,7 @@ import {ConfigKey} from './config-key.enum';
 
 const validationSchemaMap: Record<ConfigKey, Joi.Schema> = {
   [ConfigKey.NODE_ENV]: Joi.string().valid('development', 'staging', 'production').default('development'),
-  [ConfigKey.FRONTEND_HOST]: Joi.string().default('localhost'),
+  [ConfigKey.FRONTEND_HOST]: Joi.string().default('http://localhost:3000'),
   [ConfigKey.PORT]: Joi.number().min(0).max(65_535).default(4000),
   [ConfigKey.ENABLE_SWAGGER]: Joi.boolean().optional().default(true),
 
