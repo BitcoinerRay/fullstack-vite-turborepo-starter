@@ -14,9 +14,13 @@ Monorepo: **Vite** frontend and **NestJS** backend, managed with **Turborepo**. 
 git clone <your-repo-url>
 cd fullstack-vite-turborepo-starter
 npm install
-npm run init # Interactive setup (scope, git init, etc.)
+npm run init # Interactive init: package names, npm scope, Git, env, build
 
-# init can also generate .env files (from .env.example) and build shared packages
+# init will:
+# - rename all workspace package.json names (root, backend, frontend, db, shared)
+# - rewrite internal package dependencies to use the new names
+# - copy .env.example -> .env in root, frontend, and backend
+# - build packages/db and packages/shared
 
 npm run infra:start
 npm run infra:health   # wait until healthy
@@ -38,7 +42,7 @@ Edit `apps/nestjs-backend/.env` so `DATABASE_URL` matches the Postgres settings 
 4. `npm run build -w packages/db && npm run build -w packages/shared`
 5. `npm run dev` (Vite + NestJS in parallel).
 
-Note: `npm run init` can generate the `.env` files and run step 4 for you.
+Note: `npm run init` can rename packages, rewrite internal deps, generate the `.env` files, and run step 4 for you.
 
 Infrastructure runs in Docker; apps run on the host for HMR and debugging.
 
