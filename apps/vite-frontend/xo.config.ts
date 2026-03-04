@@ -44,6 +44,15 @@ const xoConfig: FlatXoConfig = [
 
       // Code rules
       'max-params': 'error',
+
+      'react/no-unknown-property': [
+        'error',
+        {
+          ignore: ['attach', 'args', 'object', 'frustumCulled'],
+        },
+      ],
+
+      'react/require-default-props': 'off',
     },
   },
 ];
