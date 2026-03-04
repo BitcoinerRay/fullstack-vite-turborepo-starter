@@ -6,9 +6,9 @@
     "packages/*"
   ],
   "scripts": {
-    "infra:start": "docker compose up -d",
+    "infra:start": "node scripts/infra-start.js",
     "infra:stop": "docker compose down",
-    "infra:restart": "docker compose down && docker compose up -d",
+    "infra:restart": "docker compose down && node scripts/infra-start.js",
     "infra:logs": "docker compose logs -f",
     "infra:ps": "docker compose ps",
     "infra:health": "docker compose ps",
