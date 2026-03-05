@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
-
 const fs = require('fs');
 const path = require('path');
 
-const { execSync } = require('child_process');
+const {execSync} = require('child_process');
 
 async function main() {
   if (!process.stdin.isTTY) {
@@ -28,25 +27,25 @@ async function main() {
     }
   }
 
-  function copyFile(src, dest, { overwrite }) {
+  function copyFile(src, dest, {overwrite}) {
     if (!fileExists(src)) {
       console.warn(`跳过：未找到 ${src}`);
-      return { copied: false, reason: 'src-missing' };
+      return {copied: false, reason: 'src-missing'};
     }
 
     if (fileExists(dest) && !overwrite) {
       console.log(`跳过：已存在 ${dest}`);
-      return { copied: false, reason: 'dest-exists' };
+      return {copied: false, reason: 'dest-exists'};
     }
 
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
+    fs.mkdirSync(path.dirname(dest), {recursive: true});
     fs.copyFileSync(src, dest);
     console.log(`已复制: ${src} -> ${dest}`);
-    return { copied: true };
+    return {copied: true};
   }
 
-  function run(command, { cwd }) {
-    execSync(command, { cwd, stdio: 'inherit' });
+  function run(command, {cwd}) {
+    execSync(command, {cwd, stdio: 'inherit'});
   }
 
   function readJson(jsonPath) {
@@ -84,7 +83,7 @@ async function main() {
       name: 'repoName',
       message: '请输入根 package.json 的 name（如 my-monorepo）:',
       default: currentRootPkg.name || 'my-monorepo',
-      validate: input => !!input.trim() || '包名不能为空',
+      validate: (input) => !!input.trim() || '包名不能为空',
     },
     {
       type: 'input',
@@ -202,15 +201,15 @@ async function main() {
     },
   ];
 
-  for (const { src, dest } of pairs) {
-    copyFile(src, dest, { overwrite: false });
+  for (const {src, dest} of pairs) {
+    copyFile(src, dest, {overwrite: false});
   }
 
   try {
     console.log('开始构建 packages/db ...');
-    run('npm run build -w packages/db', { cwd: root });
+    run('npm run build -w packages/db', {cwd: root});
     console.log('开始构建 packages/shared ...');
-    run('npm run build -w packages/shared', { cwd: root });
+    run('npm run build -w packages/shared', {cwd: root});
     console.log('构建完成。');
   } catch (err) {
     console.error('构建失败：', err.message);
@@ -221,9 +220,9 @@ async function main() {
   if (initGit) {
     try {
       if (resetGit) {
-        fs.rmSync(path.join(root, '.git'), { recursive: true, force: true });
+        fs.rmSync(path.join(root, '.git'), {recursive: true, force: true});
       }
-      run('git init', { cwd: root });
+      run('git init', {cwd: root});
       console.log('已初始化新的 Git 仓库。');
     } catch (err) {
       console.error('初始化 Git 仓库失败：', err.message);
