@@ -40,6 +40,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "xo.config.ts", "vite.config.ts"],
   "exclude": ["node_modules", "dist"]
 }
