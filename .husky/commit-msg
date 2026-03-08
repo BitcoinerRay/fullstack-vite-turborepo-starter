@@ -1,1 +1,1 @@
-npx commitlint --edit $1
+npx --no -- commitlint --edit "$(printf '%s' "$1" | tr -d '\r')"
