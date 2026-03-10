@@ -42,6 +42,11 @@ const xoConfig: FlatXoConfig = [
       '@typescript-eslint/naming-convention': 'off',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
 
+      // Allow `null` in React DOM refs and other nullable TypeScript patterns.
+      // XO's default restricted-types config auto-fixes `null` to `undefined`,
+      // which breaks common React ref typing such as `useRef<T | null>(null)`.
+      '@typescript-eslint/no-restricted-types': 'off',
+
       // Code rules
       'max-params': 'error',
 
