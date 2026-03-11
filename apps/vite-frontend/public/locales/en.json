@@ -1,0 +1,68 @@
+{
+  "validation": {
+    "required": "This field cannot be left empty. Please provide a value.",
+    "invalidEmail": "The email address entered is not valid. Please check and try again.",
+    "invalidUrl": "The URL entered is not valid. Please enter a correct web address.",
+    "invalidFormat": "The input format is not valid. Please enter a valid value.",
+    "invalidType": "Invalid input type. Expected {expected}, but received {received}.",
+    "invalidValue": "The value entered is not valid.",
+    "tooShort": "The input is too short. It must be at least {minimum} characters long.",
+    "tooLong": "The input is too long. It must not exceed {maximum} characters.",
+    "numberTooSmall": "The value is too small. It must be at least {minimum}.",
+    "numberTooLarge": "The value is too large. It must not exceed {maximum}.",
+    "unrecognizedKeys": "The following fields are not recognized: {keys}.",
+    "invalidUnion": "The input does not match any of the allowed formats.",
+    "notMultipleOf": "The value must be a multiple of {multipleOf}.",
+    "customError": "The input provided is invalid. Please review and correct it."
+  },
+  "components": {
+    "header": {},
+    "footer": {
+      "groups": {
+        "company": "Company",
+        "legal": "Legal"
+      },
+      "links": {
+        "aboutUs": "About Us",
+        "contact": "Contact",
+        "imprint": "Imprint",
+        "privacyPolicy": "Privacy Policy",
+        "termsOfService": "Terms of Service"
+      },
+      "copyrightNotice": "Vite - NestJS - Turbo Boilerplate. All rights reserved.",
+      "localeSelect": {
+        "languages": {
+          "en": "English",
+          "zh": "中文"
+        }
+      }
+    },
+    "confirmDialog": {
+      "header": "Confirm",
+      "message": "Are you sure you want to proceed?",
+      "buttons": {
+        "accept": "Yes",
+        "reject": "No"
+      }
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "Welcome to Vite - NestJS - Turbo Boilerplate"
+    }
+  },
+  "auth": {
+    "login": "Sign In",
+    "register": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "loginFailed": "Invalid email or password.",
+    "registerFailed": "Registration failed. Please try again."
+  },
+  "common": {
+    "loading": "Loading..."
+  }
+}

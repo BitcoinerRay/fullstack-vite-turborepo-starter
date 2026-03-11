@@ -1,0 +1,68 @@
+{
+  "validation": {
+    "required": "此字段不能为空，请填写内容。",
+    "invalidEmail": "请输入有效的邮箱地址。",
+    "invalidUrl": "请输入有效的网址。",
+    "invalidFormat": "输入格式无效，请填写有效内容。",
+    "invalidType": "输入类型无效。期望 {expected}，实际为 {received}。",
+    "invalidValue": "输入值无效。",
+    "tooShort": "内容过短，至少需要 {minimum} 个字符。",
+    "tooLong": "内容过长，不能超过 {maximum} 个字符。",
+    "numberTooSmall": "数值过小，至少为 {minimum}。",
+    "numberTooLarge": "数值过大，不能超过 {maximum}。",
+    "unrecognizedKeys": "以下字段不被识别：{keys}。",
+    "invalidUnion": "输入不符合任一允许的格式。",
+    "notMultipleOf": "数值必须是 {multipleOf} 的倍数。",
+    "customError": "输入无效，请检查后重试。"
+  },
+  "components": {
+    "header": {},
+    "footer": {
+      "groups": {
+        "company": "公司",
+        "legal": "法律"
+      },
+      "links": {
+        "aboutUs": "关于我们",
+        "contact": "联系我们",
+        "imprint": "版权说明",
+        "privacyPolicy": "隐私政策",
+        "termsOfService": "服务条款"
+      },
+      "copyrightNotice": "Vite - NestJS - Turbo Boilerplate 版权所有。",
+      "localeSelect": {
+        "languages": {
+          "en": "English",
+          "zh": "中文"
+        }
+      }
+    }
+  },
+  "confirmDialog": {
+    "header": "确认",
+    "message": "确定要继续吗？",
+    "buttons": {
+      "accept": "是",
+      "reject": "否"
+    }
+  },
+  "pages": {
+    "home": {
+      "title": "欢迎使用 Vite - NestJS - Turbo Boilerplate"
+    }
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "email": "邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "noAccount": "没有账号？",
+    "haveAccount": "已有账号？",
+    "loginFailed": "邮箱或密码错误。",
+    "registerFailed": "注册失败，请重试。"
+  },
+  "common": {
+    "loading": "加载中..."
+  }
+}
