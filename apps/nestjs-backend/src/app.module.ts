@@ -1,3 +1,4 @@
+import {resolve} from 'node:path';
 import {Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {APP_GUARD} from '@nestjs/core';
@@ -16,7 +17,10 @@ import {UsersModule} from './users/users.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env', '../../.env'],
+      envFilePath: [
+        resolve(process.cwd(), `../../.env.${process.env.NODE_ENV ?? 'development'}`),
+        resolve(process.cwd(), '../../.env'),
+      ],
       validationSchema,
       load: [appConfig],
     }),

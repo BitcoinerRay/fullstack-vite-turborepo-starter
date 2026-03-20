@@ -5,7 +5,6 @@ import {useParams} from 'react-router-dom';
 export function Home() {
   const {t} = useTranslation();
   const {locale} = useParams<{locale: string}>();
-
   return (
     <>
       <Helmet>
