@@ -2,6 +2,7 @@ import {Controller, Get} from '@nestjs/common';
 import {ApiTags, ApiOperation, ApiResponse} from '@nestjs/swagger';
 import {HealthCheckService, HealthCheck, HealthIndicatorResult, HealthCheckResult} from '@nestjs/terminus';
 import {PrismaHealthIndicator} from './prisma.health';
+import {RedisHealthIndicator} from './redis.health';
 
 @ApiTags('health')
 @Controller('health')
@@ -9,6 +10,7 @@ export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
     private readonly db: PrismaHealthIndicator,
+    private readonly redis: RedisHealthIndicator,
   ) {}
 
   @Get()
@@ -23,6 +25,9 @@ export class HealthController {
     description: 'Service Unavailable',
   })
   async check(): Promise<HealthCheckResult> {
-    return this.health.check([async (): Promise<HealthIndicatorResult> => this.db.pingCheck('database')]);
+    return this.health.check([
+      async (): Promise<HealthIndicatorResult> => this.db.pingCheck('database'),
+      async (): Promise<HealthIndicatorResult> => this.redis.pingCheck('redis'),
+    ]);
   }
 }

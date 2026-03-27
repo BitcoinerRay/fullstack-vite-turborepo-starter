@@ -23,7 +23,7 @@ services:
 
   # Redis cache/queue
   redis:
-    image: redis:latest
+    image: redis:7.4-bookworm
     command: redis-server --requirepass ${REDIS_PASSWORD:-redis_pass}
     ports:
       - '${REDIS_PORT:-6379}:6379'
