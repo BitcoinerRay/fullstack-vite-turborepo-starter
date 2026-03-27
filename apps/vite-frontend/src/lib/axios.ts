@@ -18,22 +18,22 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    useLoadingStore.getState().setIsLoading(true);
+    useLoadingStore.getState().increment();
     return config;
   },
   async (error: AxiosError) => {
-    useLoadingStore.getState().setIsLoading(false);
+    useLoadingStore.getState().decrement();
     throw error;
   },
 );
 
 axiosInstance.interceptors.response.use(
   async (response: AxiosResponse) => {
-    useLoadingStore.getState().setIsLoading(false);
+    useLoadingStore.getState().decrement();
     return response;
   },
   async (error: AxiosError<ApiErrorBody>) => {
-    useLoadingStore.getState().setIsLoading(false);
+    useLoadingStore.getState().decrement();
 
     const status = error.response?.status;
     const message = error.response?.data?.message;

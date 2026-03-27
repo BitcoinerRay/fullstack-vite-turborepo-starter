@@ -2,12 +2,24 @@ import {create} from 'zustand';
 
 type LoadingStore = {
   isLoading: boolean;
-  setIsLoading: (loading: boolean) => void;
+  pendingRequests: number;
+  increment: () => void;
+  decrement: () => void;
 };
 
 export const useLoadingStore = create<LoadingStore>((set) => ({
   isLoading: false,
-  setIsLoading(loading): void {
-    set({isLoading: loading});
+  pendingRequests: 0,
+  increment(): void {
+    set((state) => {
+      const pendingRequests = state.pendingRequests + 1;
+      return {pendingRequests, isLoading: pendingRequests > 0};
+    });
+  },
+  decrement(): void {
+    set((state) => {
+      const pendingRequests = Math.max(0, state.pendingRequests - 1);
+      return {pendingRequests, isLoading: pendingRequests > 0};
+    });
   },
 }));

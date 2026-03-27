@@ -37,7 +37,7 @@ export default defineConfig({
             '@radix-ui/react-select',
             '@radix-ui/react-slot',
           ],
-          'vendor-query': ['@tanstack/react-query', '@tanstack/react-query-devtools'],
+          'vendor-query': ['@tanstack/react-query'],
         },
       },
     },
