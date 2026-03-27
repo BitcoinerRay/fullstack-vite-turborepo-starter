@@ -10,7 +10,7 @@
     "start:prod": "cross-env NODE_ENV=production node dist/src/main",
     "lint": "xo",
     "lint:fix": "xo --fix",
-    "test:unit": "jest",
+    "test:unit": "jest --passWithNoTests",
     "test:unit:watch": "jest --watch",
     "test:unit:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",

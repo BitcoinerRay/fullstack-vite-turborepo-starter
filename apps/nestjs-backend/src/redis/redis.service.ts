@@ -1,10 +1,11 @@
-import {Injectable, OnModuleInit, OnModuleDestroy} from '@nestjs/common';
+import {Injectable, Logger, OnModuleInit, OnModuleDestroy} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import Redis, {RedisOptions} from 'ioredis';
 import {ConfigKey} from 'src/config/config-key.enum';
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(RedisService.name);
   private publisher: Redis | undefined;
   private subscriber: Redis | undefined;
 
@@ -45,23 +46,29 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
       this.subscriber = new Redis(redisConfig);
     }
 
-    // Add error handlers to prevent unhandled errors
     this.publisher?.on('error', (err: Error) => {
-      console.error('Redis Publisher Error:', err.message);
+      this.logger.error(`Redis Publisher Error: ${err.message}`);
     });
 
     this.subscriber?.on('error', (err: Error) => {
-      console.error('Redis Subscriber Error:', err.message);
+      this.logger.error(`Redis Subscriber Error: ${err.message}`);
     });
 
-    // Log successful connection
     this.publisher?.on('connect', () => {
-      console.log('Redis Publisher connected successfully');
+      this.logger.log('Redis Publisher connected successfully');
     });
 
     this.subscriber?.on('connect', () => {
-      console.log('Redis Subscriber connected successfully');
+      this.logger.log('Redis Subscriber connected successfully');
     });
+  }
+
+  async ping(): Promise<string> {
+    if (!this.publisher) {
+      throw new Error('Redis publisher is not initialized');
+    }
+
+    return this.publisher.ping();
   }
 
   async publish<T>(channel: string, message: T): Promise<void> {
@@ -85,7 +92,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
           const parsed = JSON.parse(msg) as T;
           callback(parsed);
         } catch (error) {
-          console.error('Failed to parse message:', error);
+          this.logger.error('Failed to parse message:', error);
           callback(msg as T);
         }
       }
