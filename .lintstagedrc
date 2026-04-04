@@ -1,6 +1,7 @@
 {
   "apps/nestjs-backend/**/*.{ts,tsx,js,jsx}": "npm --workspace nestjs-backend run lint:fix",
   "apps/vite-frontend/**/*.{ts,tsx,js,jsx}": "npm --workspace vite-frontend run lint:fix",
+  "packages/db/**/*.{ts,tsx,js,jsx}": "npm --workspace @next-nest-turbo-auth-boilerplate/db run lint:fix",
   "packages/shared/**/*.{ts,tsx,js,jsx}": "npm --workspace @next-nest-turbo-auth-boilerplate/shared run lint:fix",
-  "*.{json,md,css,html,ts,tsx,js,jsx}": ["npm run format"]
+  "*.{json,md,css,html,yml,yaml}": "prettier --write"
 }

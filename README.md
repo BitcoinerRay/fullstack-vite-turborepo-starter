@@ -198,7 +198,7 @@ REDIS_PASSWORD=redis_pass
 | `npm run dev`          | 并行启动前后端开发环境                                       |
 | `npm run dev:all`      | 先起基础设施再启动开发环境                                   |
 | `npm run build`        | 构建整个 monorepo；会先构建 `packages/db`、`packages/shared` |
-| `npm run format`       | 对 `ts/tsx/md` 执行 Prettier                                 |
+| `npm run format`       | 对文档与静态文本资源执行 Prettier                            |
 | `npm run start:dev`    | 按 workspace 的 `start:dev` 运行                             |
 | `npm run start:prod`   | 按 workspace 的 `start:prod` 运行                            |
 
@@ -211,7 +211,7 @@ REDIS_PASSWORD=redis_pass
 | `npm run test:unit`     | 可直接使用             | 当前已接通后端健康检查单测                                                                                            |
 | `npm run test:unit:cov` | 有前提但可用           | 基于同一套测试资产；本轮未单独重跑 coverage                                                                           |
 | `npm run test:e2e`      | 可直接使用             | 当前已接通后端 Jest E2E smoke test 与前端 Playwright smoke test；首次运行前可能需要 `npx playwright install chromium` |
-| `npm run init`          | 适合模板二次定制时使用 | 会重命名 workspace 包名、重写内部依赖，并生成可选的根级 `.env` Docker 覆盖模板                                       |
+| `npm run init`          | 适合模板二次定制时使用 | 会重命名 workspace 包名、重写内部依赖，并生成可选的根级 `.env` Docker 覆盖模板                                        |
 | `npm run copilot:sync`  | 仓库维护脚本           | 只在你明确知道它要同步什么时再用                                                                                      |
 
 ## 运行机制拆解
