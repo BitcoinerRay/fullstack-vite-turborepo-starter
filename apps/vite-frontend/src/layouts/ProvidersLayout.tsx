@@ -7,6 +7,7 @@ import {ReactQueryProvider} from '@/providers/react-query/react-query.provider';
 import {ToastProvider} from '@/providers/toast/toast.provider';
 import {ConfirmProvider} from '@/providers/confirm/confirm.provider';
 import {ZodErrorProvider} from '@/providers/zod-error/zod-error.provider';
+import {AuthSessionProvider} from '@/providers/auth-session/auth-session.provider';
 import {LoadingAnimation} from '@/components/loading-animation/loading-animation.component';
 
 export function ProvidersLayout() {
@@ -18,6 +19,7 @@ export function ProvidersLayout() {
           <ToastProvider>
             <ConfirmProvider>
               <ReactQueryProvider>
+                <AuthSessionProvider />
                 <LoadingAnimation />
                 <Outlet />
               </ReactQueryProvider>
