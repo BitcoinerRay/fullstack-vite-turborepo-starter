@@ -1,8 +1,8 @@
 import {useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
-
-const SUPPORTED_LOCALES = new Set(['en', 'zh']);
+import {defaultLocale, isSupportedLocale} from '@/i18n/constants.ts';
+import {getLocalePath} from '@/i18n/navigation.ts';
 
 export function LanguageSync() {
   const {locale} = useParams<{locale: string}>();
@@ -10,8 +10,8 @@ export function LanguageSync() {
   const {i18n} = useTranslation();
 
   useEffect(() => {
-    if (!locale || !SUPPORTED_LOCALES.has(locale)) {
-      navigate('/en', {replace: true});
+    if (!isSupportedLocale(locale)) {
+      navigate(getLocalePath(defaultLocale), {replace: true});
       return;
     }
 

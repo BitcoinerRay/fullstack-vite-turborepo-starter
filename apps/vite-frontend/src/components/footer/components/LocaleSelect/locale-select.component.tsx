@@ -3,9 +3,8 @@ import {useTranslation} from 'react-i18next';
 import {useParams, useNavigate, useLocation} from 'react-router-dom';
 import {Languages} from 'lucide-react';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select.tsx';
+import {defaultLocale, supportedLocales} from '@/i18n/constants.ts';
 import {replaceLocaleInPath} from '@/i18n/navigation.ts';
-
-const supportedLocales = ['en', 'zh'];
 
 export function LocaleSelect(): JSX.Element {
   const {t} = useTranslation();
@@ -24,7 +23,7 @@ export function LocaleSelect(): JSX.Element {
   };
 
   return (
-    <Select disabled={isPending} value={locale ?? 'en'} onValueChange={onLocaleChange}>
+    <Select disabled={isPending} value={locale ?? defaultLocale} onValueChange={onLocaleChange}>
       <SelectTrigger className="w-[180px]">
         <Languages className="mr-2 h-4 w-4" />
         <SelectValue />

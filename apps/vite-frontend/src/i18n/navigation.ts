@@ -1,7 +1,7 @@
-export {Link, useNavigate, useLocation, Navigate} from 'react-router-dom';
+import {defaultLocale, isSupportedLocale} from '@/i18n/constants.ts';
 
-const defaultLocale = 'en';
-const supportedLocales = new Set(['en', 'zh']);
+export {defaultLocale, supportedLocales} from '@/i18n/constants.ts';
+export {Link, useNavigate, useLocation, Navigate} from 'react-router-dom';
 
 function normalizePath(path: string): string {
   if (!path || path === '/') {
@@ -12,7 +12,7 @@ function normalizePath(path: string): string {
 }
 
 export function getLocale(locale: string | undefined): string {
-  if (!locale || !supportedLocales.has(locale)) {
+  if (!isSupportedLocale(locale)) {
     return defaultLocale;
   }
 
@@ -34,12 +34,10 @@ export function replaceLocaleInPath(pathname: string, locale: string | undefined
   const normalizedLocale = getLocale(locale);
   const segments = pathname.split('/');
 
-  if (segments.length > 1 && supportedLocales.has(segments[1]!)) {
+  if (segments.length > 1 && isSupportedLocale(segments[1])) {
     segments[1] = normalizedLocale;
     return segments.join('/');
   }
 
   return getLocalePath(normalizedLocale, pathname);
 }
-
-export {defaultLocale, supportedLocales};
