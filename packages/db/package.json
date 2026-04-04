@@ -4,8 +4,8 @@
   "scripts": {
     "start:dev": "tsc --watch",
     "build": "prisma generate && tsc",
-    "lint": "xo",
-    "lint:fix": "xo --fix",
+    "lint": "npm run db:generate && xo",
+    "lint:fix": "npm run db:generate && xo --fix",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:pull": "prisma db pull",
