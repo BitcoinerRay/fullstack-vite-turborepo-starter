@@ -5,6 +5,8 @@ import {BareLayout} from '@/layouts/BareLayout.tsx';
 import {ProvidersLayout} from '@/layouts/ProvidersLayout.tsx';
 import {PrivateRoute} from '@/router/PrivateRoute.tsx';
 import {LoadingAnimation} from '@/components/loading-animation/loading-animation.component';
+import {defaultLocale} from '@/i18n/constants.ts';
+import {getLocalePath} from '@/i18n/navigation.ts';
 
 const Home = React.lazy(async () => {
   const mod = await import('../pages/Home.tsx');
@@ -46,7 +48,7 @@ function infoPageElement(pageKey: 'about' | 'contact' | 'imprint' | 'privacy' | 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate replace to="/en" />,
+    element: <Navigate replace to={getLocalePath(defaultLocale)} />,
   },
   {
     path: '/:locale',
