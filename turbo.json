@@ -11,18 +11,13 @@
       "outputs": ["dist/**"]
     },
     "lint": {
-      "dependsOn": ["^build"],
-      "cache": false,
-      "persistent": true
+      "cache": false
     },
     "lint:fix": {
-      "dependsOn": ["^build"],
-      "cache": false,
-      "persistent": true
+      "cache": false
     },
     "format": {
-      "cache": false,
-      "persistent": true
+      "cache": false
     },
     "dev": {
       "cache": false,
@@ -38,7 +33,7 @@
     },
     "test:unit": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": []
     },
     "test:unit:cov": {
       "dependsOn": ["^build"],
