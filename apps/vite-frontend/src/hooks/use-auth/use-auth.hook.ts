@@ -5,16 +5,17 @@ import {getMeApi} from '@/api/user.api';
 import {loginApi, logoutApi, registerApi} from '@/api/auth.api';
 import {useAuthStore} from '@/store/auth/auth.store';
 
-const ME_QUERY_KEY = ['users', 'me'] as const;
+export const ME_QUERY_KEY = ['users', 'me'] as const;
 
-export function useMe(): {user: UserDto | undefined; isLoading: boolean; isError: boolean} {
+export function useAuthSessionBootstrap(): void {
   const {setUser, clearAuth} = useAuthStore();
 
-  const {data, isLoading, isError} = useQuery({
+  const {data, isError} = useQuery({
     queryKey: ME_QUERY_KEY,
     queryFn: getMeApi,
     retry: false,
     staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
@@ -24,15 +25,17 @@ export function useMe(): {user: UserDto | undefined; isLoading: boolean; isError
       clearAuth();
     }
   }, [data, isError, setUser, clearAuth]);
+}
 
-  return {user: data, isLoading, isError};
+export function useAuthSession(): {user: UserDto | undefined; isAuthenticated: boolean; sessionStatus: string} {
+  const {user, isAuthenticated, sessionStatus} = useAuthStore();
+  return {user, isAuthenticated, sessionStatus};
 }
 
 export function useLogin(): {
   login: (email: string, password: string) => Promise<void>;
   isPending: boolean;
 } {
-  const {setUser} = useAuthStore();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -40,8 +43,7 @@ export function useLogin(): {
       return loginApi({email, password});
     },
     async onSuccess(result) {
-      setUser(result.user);
-      await queryClient.invalidateQueries({queryKey: ME_QUERY_KEY});
+      queryClient.setQueryData(ME_QUERY_KEY, result.user);
     },
   });
 
@@ -57,7 +59,6 @@ export function useRegister(): {
   register: (email: string, password: string) => Promise<void>;
   isPending: boolean;
 } {
-  const {setUser} = useAuthStore();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -65,8 +66,7 @@ export function useRegister(): {
       return registerApi({email, password});
     },
     async onSuccess(result) {
-      setUser(result.user);
-      await queryClient.invalidateQueries({queryKey: ME_QUERY_KEY});
+      queryClient.setQueryData(ME_QUERY_KEY, result.user);
     },
   });
 

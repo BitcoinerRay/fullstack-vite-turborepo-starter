@@ -1,7 +1,8 @@
 import {type JSX} from 'react';
 import {Navigate, useParams} from 'react-router-dom';
-import {useMe} from '@/hooks/use-auth/use-auth.hook';
+import {useAuthSession} from '@/hooks/use-auth/use-auth.hook';
 import {LoadingAnimation} from '@/components/loading-animation/loading-animation.component';
+import {getLocalePath} from '@/i18n/navigation.ts';
 
 type PrivateRouteProps = {
   readonly children: JSX.Element;
@@ -9,14 +10,14 @@ type PrivateRouteProps = {
 
 export function PrivateRoute({children}: PrivateRouteProps): JSX.Element {
   const {locale} = useParams<{locale: string}>();
-  const {isLoading, isError} = useMe();
+  const {sessionStatus} = useAuthSession();
 
-  if (isLoading) {
+  if (sessionStatus === 'loading') {
     return <LoadingAnimation />;
   }
 
-  if (isError) {
-    return <Navigate replace to={`/${locale ?? 'en'}/login`} />;
+  if (sessionStatus === 'guest') {
+    return <Navigate replace to={getLocalePath(locale, '/login')} />;
   }
 
   return children;

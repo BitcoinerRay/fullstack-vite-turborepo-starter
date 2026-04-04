@@ -1,7 +1,12 @@
 import axios, {type AxiosError, type AxiosResponse, type InternalAxiosRequestConfig} from 'axios';
 import {toast} from 'sonner';
+import {getLocale, getLocalePath} from '@/i18n/navigation.ts';
 import {useAuthStore} from '@/store/auth/auth.store';
 import {useLoadingStore} from '@/store/loading/loading.store';
+
+type RequestConfigWithAuthRedirect = {
+  skipAuthRedirect?: boolean;
+};
 
 type ApiErrorBody = {
   message?: string;
@@ -34,6 +39,10 @@ function getApiBaseUrl(): string {
   return `${normalizeBackendOrigin(backendUrl)}/api/v1`;
 }
 
+function isAuthPagePath(pathname: string): boolean {
+  return /\/(login|register)\/?$/u.test(pathname);
+}
+
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     useLoadingStore.getState().increment();
@@ -59,9 +68,11 @@ axiosInstance.interceptors.response.use(
     if (status === 401) {
       useAuthStore.getState().clearAuth();
       const pathname = globalThis.window?.location.pathname ?? '';
-      if (!pathname.includes('/login')) {
-        const locale = pathname.split('/')[1] ?? 'en';
-        globalThis.window.location.href = `/${locale}/login`;
+      const localeMatch = /^\/([^/]+)/u.exec(pathname);
+      const locale = getLocale(localeMatch?.[1]);
+      const requestConfig = error.config as RequestConfigWithAuthRedirect | undefined;
+      if (!requestConfig?.skipAuthRedirect && !isAuthPagePath(pathname)) {
+        globalThis.window.location.href = getLocalePath(locale, '/login');
       }
 
       throw error;
