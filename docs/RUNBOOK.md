@@ -136,5 +136,5 @@ npm run infra:start
 ## 当前运行手册中的限制
 
 - 本仓库当前没有可用的自动化单测/E2E 流程可作为运维验收
-- `npm run init` 不是可靠的恢复手段，因为它依赖不存在的 `.env.example`
+- `npm run init` 更适合模板二次定制，不是日常运维恢复命令
 - 根级 `.env.production` 目前更像示例值，而不是经过真实部署验证的生产模板
