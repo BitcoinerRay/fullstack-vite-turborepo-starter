@@ -31,9 +31,9 @@
 
 ## API 访问方式
 
-- Axios `baseURL` 固定为 `/api/v1`
-- 开发环境依赖 Vite 代理把 `/api/v1` 转发到 `http://localhost:4000`
-- 根级 `.env.development` 中虽然存在 `VITE_BACKEND_URL`，但前端当前并未消费它
+- 开发环境下，Axios 请求相对路径 `/api/v1`
+- Vite 会读取 `VITE_BACKEND_URL`，把 `/api/v1` 代理到对应后端地址
+- 非开发环境下，前端 API client 会基于 `VITE_BACKEND_URL` 计算完整后端基地址
 
 ## 常用命令
 

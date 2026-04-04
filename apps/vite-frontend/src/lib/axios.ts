@@ -9,12 +9,30 @@ type ApiErrorBody = {
 };
 
 export const axiosInstance = axios.create({
-  baseURL: '/api/v1',
+  baseURL: getApiBaseUrl(),
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+function normalizeBackendOrigin(backendUrl: string): string {
+  return backendUrl.replace(/\/api\/v1\/?$/u, '').replace(/\/$/u, '');
+}
+
+function getApiBaseUrl(): string {
+  if (import.meta.env.DEV) {
+    return '/api/v1';
+  }
+
+  const backendUrl =
+    typeof import.meta.env.VITE_BACKEND_URL === 'string' ? import.meta.env.VITE_BACKEND_URL : undefined;
+  if (!backendUrl) {
+    return '/api/v1';
+  }
+
+  return `${normalizeBackendOrigin(backendUrl)}/api/v1`;
+}
 
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
