@@ -48,4 +48,4 @@ npm run lint -w apps/vite-frontend
 ## 当前限制
 
 - 当前只有一条 Playwright smoke test，覆盖范围仍然偏轻量
-- `apps/vite-frontend/MIGRATION-SUMMARY.md` 是迁移归档，不应把它当成当前实现说明
+- `docs/archive/frontend-migration/MIGRATION-SUMMARY.md` 是迁移归档，不应把它当成当前实现说明

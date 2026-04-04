@@ -12,9 +12,9 @@
 > 仓库现状快照（验证日期：2026-04-04）
 >
 > - `npm run build` 可通过
-> - `npm run test:unit` 可通过，当前包含一条后端健康检查单测
+> - `npm run test:unit` 可通过，当前包含后端健康检查单测
 > - `npm run test:e2e` 可通过，当前包含后端 Jest E2E smoke test 和前端 Playwright smoke test
-> - `npm run lint` 在当前工作区不能作为基线结论，因为仓库里已有一个未提交的后端文件改动
+> - `npm run lint` 可通过，当前工作区可以作为干净基线
 
 ## 项目定位
 
@@ -87,6 +87,7 @@ packages/
 - Node.js：仓库声明要求 `>=24.0.0`
 - npm：仓库声明要求 `>=11.0.0`
 - Docker Desktop 或可用的 Docker Engine
+- 根目录提供 `.nvmrc`，当前固定版本为 `24.13.1`
 
 > 注意：本地本次验证环境是 `Node v20.20.0 / npm 10.8.2`，`npm run build` 能跑通，但这不等于仓库正式支持该组合。安装兼容性仍以 `package.json` 里的 engine 要求为准。
 
@@ -304,17 +305,17 @@ REDIS_PASSWORD=redis_pass
 
 ### P2：可作为下一轮工程治理
 
-| 问题                          | 影响                                 | 证据                                                                  | 建议动作                                                          |
-| ----------------------------- | ------------------------------------ | --------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 前端迁移残留较多              | 容易混淆“当前实现”与“历史背景”       | `apps/vite-frontend/MIGRATION-SUMMARY.md`、多个 `'use client'` 文件头 | 把迁移说明降级为历史资料，并清理不再有语义价值的残留              |
-| `turbo.json` 环境依赖声明偏弱 | 环境变更未必能触发所有需要的缓存失效 | `turbo.json` 的 `globalDependencies` 仅包含 `**/.env.*local`          | 补上根级 `.env.development`、`.env.production`、`.env` 等真实依赖 |
+| 问题                          | 影响                                 | 证据                                                                               | 建议动作                                                          |
+| ----------------------------- | ------------------------------------ | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 前端迁移残留较多              | 容易混淆“当前实现”与“历史背景”       | `docs/archive/frontend-migration/MIGRATION-SUMMARY.md`、多个 `'use client'` 文件头 | 把迁移说明降级为历史资料，并清理不再有语义价值的残留              |
+| `turbo.json` 环境依赖声明偏弱 | 环境变更未必能触发所有需要的缓存失效 | `turbo.json` 的 `globalDependencies` 仅包含 `**/.env.*local`                       | 补上根级 `.env.development`、`.env.production`、`.env` 等真实依赖 |
 
 ## 已知问题与限制
 
 - 当前前端有效页面只有：首页、登录页、注册页、错误页、404 页
 - `Header` 仍是占位组件，未形成真实导航
 - `Footer` 包含 `/about`、`/contact`、`/privacy` 等链接，但路由并不存在
-- `apps/vite-frontend/MIGRATION-SUMMARY.md` 与 `MIGRATION-TEST-RESULTS.md` 是历史迁移记录，不应视为当前状态文档
+- `docs/archive/frontend-migration/MIGRATION-SUMMARY.md` 与 `docs/archive/frontend-migration/MIGRATION-TEST-RESULTS.md` 是历史迁移记录，不应视为当前状态文档
 - 后端 `readme.md`、前端 README、`codemaps/` 在本次更新前存在明显过时信息，后续也要避免再次多处平行维护同一事实
 
 ## 延伸阅读

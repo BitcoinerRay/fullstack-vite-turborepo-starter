@@ -110,7 +110,7 @@ src/
 ## Current Limitations
 
 - 前端当前已接入一条 Playwright smoke test，覆盖范围仍偏轻量
-- `apps/vite-frontend/MIGRATION-SUMMARY.md` 是历史迁移记录，不应当作现状文档
+- `docs/archive/frontend-migration/MIGRATION-SUMMARY.md` 是历史迁移记录，不应当作现状文档
 - 当前已经补齐基础导航和信息页，但整体页面范围仍然偏轻量
 
 ## Build Notes
