@@ -2,7 +2,7 @@ import {ConfigKey} from './config-key.enum';
 
 const appConfig = (): Record<ConfigKey, unknown> => ({
   [ConfigKey.NODE_ENV]: process.env.NODE_ENV,
-  [ConfigKey.FRONTEND_HOST]: process.env.HOST,
+  [ConfigKey.FRONTEND_HOST]: process.env.FRONTEND_HOST ?? process.env.HOST,
   [ConfigKey.PORT]: process.env.PORT,
   [ConfigKey.ENABLE_SWAGGER]: Boolean(process.env.ENABLE_SWAGGER === 'true'),
 
