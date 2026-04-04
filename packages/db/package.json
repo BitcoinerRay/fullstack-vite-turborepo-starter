@@ -31,7 +31,7 @@
     }
   },
   "dependencies": {
-    "@nestjs/common": "11.0.10",
+    "@nestjs/common": "11.1.18",
     "@prisma/client": "6.2.0"
   },
   "devDependencies": {

@@ -51,8 +51,10 @@ async function bootstrap(): Promise<void> {
       .setDescription('The nest auth boilerplate API description')
       .setVersion('1.0')
       .build();
-    const documentFactory = (): OpenAPIObject => SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup('api/docs', app, documentFactory);
+    // npm workspaces can install Swagger and Nest core types at different paths.
+    const swaggerApp = app as Parameters<typeof SwaggerModule.createDocument>[0];
+    const documentFactory = (): OpenAPIObject => SwaggerModule.createDocument(swaggerApp, swaggerConfig);
+    SwaggerModule.setup('api/docs', swaggerApp, documentFactory);
   }
 
   await app.listen(port);
