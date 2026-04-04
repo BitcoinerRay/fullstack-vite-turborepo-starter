@@ -30,7 +30,7 @@
 | 场景                      | 建议命令                               |
 | ------------------------- | -------------------------------------- |
 | 改了通用代码路径          | `npm run build`                        |
-| 改了格式或文档            | `npm run format`                       |
+| 改了文档或静态文本资源    | `npm run format`                       |
 | 改了 Prisma schema / 迁移 | `npm run build -w packages/db`         |
 | 改了 shared DTO / 类型    | `npm run build -w packages/shared`     |
 | 改了前端业务逻辑          | `npm run build -w apps/vite-frontend`  |
@@ -45,6 +45,12 @@
 | `npm run test:e2e`  | 可直接使用       | 当前已接通后端 Jest E2E 与前端 Playwright smoke test |
 
 如果你补的是文档，不需要为了“看起来完整”而声称这些测试已可用；应如实记录现状。
+
+补充说明：
+
+- `npm run format` 只处理 `json/md/css/html/yml/yaml`
+- `apps/*` 和 `packages/*` 下的 `ts/tsx/js/jsx` 统一通过各 workspace 的 `lint:fix` 收敛格式
+- 仓库已新增 `.prettierignore`，避免编辑器在保存代码文件时再次用 Prettier 改写缩进
 
 首次运行 Playwright 测试前，如果本机还没有浏览器二进制，需要执行：
 

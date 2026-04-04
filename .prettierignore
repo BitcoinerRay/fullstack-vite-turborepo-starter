@@ -1,0 +1,10 @@
+# TypeScript and JavaScript source files are normalized by workspace lint:fix commands.
+# Keeping them out of Prettier avoids save-time churn and conflicts with XO autofix.
+apps/**/*.ts
+apps/**/*.tsx
+apps/**/*.js
+apps/**/*.jsx
+packages/**/*.ts
+packages/**/*.tsx
+packages/**/*.js
+packages/**/*.jsx
