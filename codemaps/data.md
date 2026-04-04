@@ -1,42 +1,62 @@
-# Data Models & Schemas
+# Data Models and Schemas
 
-**Updated:** 2026-02-13
+**Updated:** 2026-04-04
 
-## Database Models (Prisma)
+## Prisma Schema
 
-### Schema Location
+- 位置：`packages/db/prisma/schema.prisma`
+- 迁移目录：`packages/db/prisma/migrations/`
 
-- packages/db/prisma/schema.prisma
-- Migrations: packages/db/prisma/migrations/
+### Current Models
 
-### Models
+| 模型                   | 说明                                                                                           |
+| ---------------------- | ---------------------------------------------------------------------------------------------- |
+| `User`                 | 当前唯一真实业务模型，字段包含 `id`、`email`、`passwordHash`、`role`、`createdAt`、`updatedAt` |
+| `mikro_orm_migrations` | 兼容旧迁移体系的遗留表，已 `@@ignore`                                                          |
 
-- Dummy: id (UUID), createdAt, updatedAt (placeholder)
-- mikro_orm_migrations: @@ignore (compatibility)
+### Current Enums
 
-## Config Schemas
+| 枚举       | 位置                              | 说明                   |
+| ---------- | --------------------------------- | ---------------------- |
+| `UserRole` | Prisma schema / `packages/shared` | 当前有 `USER`、`ADMIN` |
 
-### ConfigKey (Backend)
+## Shared DTO Contract
 
-- config/config-key.enum.ts
-- Keys: NODE*ENV, FRONTEND_HOST, PORT, ENABLE_SWAGGER, POSTGRES*\_, REDIS\_\_
+`packages/shared/src/index.ts` 当前真正导出的是以下对象：
 
-### Validation (Backend)
+| 导出项            | 位置                                 | 作用             |
+| ----------------- | ------------------------------------ | ---------------- |
+| `LoginDto`        | `src/dtos/auth/login.dto.ts`         | 登录请求体       |
+| `RegisterDto`     | `src/dtos/auth/register.dto.ts`      | 注册请求体       |
+| `AuthResponseDto` | `src/dtos/auth/auth-response.dto.ts` | 登录/注册响应体  |
+| `UserDto`         | `src/dtos/user/user.dto.ts`          | 用户展示结构     |
+| `UpdateUserDto`   | `src/dtos/user/update-user.dto.ts`   | 用户更新结构占位 |
+| `UserRole`        | `src/enums/user-role.enum.ts`        | 角色枚举         |
 
-- config/validation.schema.ts — Joi schema for env vars
+## Backend Config Schema
 
-## Frontend Types (vite-frontend)
+- 配置键：`apps/nestjs-backend/src/config/config-key.enum.ts`
+- 校验规则：`apps/nestjs-backend/src/config/validation.schema.ts`
 
-- FloatLabelInputTextProps → components/float-label-input-text/types/
-- ErrorResponse (backend): nestjs-backend common/filters/prisma-exception/types/
+当前覆盖的配置域包括：
 
-## Shared Packages
+- 应用运行环境
+- 端口与 Swagger
+- 数据库连接
+- Redis 连接
+- JWT 配置
 
-### packages/shared
+## DB Package Exports
 
-- src/index.ts — empty; reserved for shared DTOs/types
+`packages/db/src/index.ts` 当前导出：
 
-### packages/db
+- `PrismaClient`
+- `PrismaService`
+- `PrismaModule`
+- Prisma 常见错误类型
+- `User` 类型
 
-- Prisma schema and migrations
-- Exports: PrismaClient, PrismaService, PrismaModule
+## Data Notes
+
+- 当前仓库还没有独立的“业务领域模型层”，DTO 与 Prisma model 之间的映射主要集中在后端 service
+- 用户 DTO 已经与 Prisma model 分离，`UsersService.toDto()` 是当前转换入口

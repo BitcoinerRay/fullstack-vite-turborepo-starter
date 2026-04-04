@@ -1,53 +1,52 @@
-# @next-nest-turbo-auth-boilerplate/db
+# DB Package
 
-Shared database package for the monorepo using Prisma ORM.
+`packages/db` 负责 Prisma schema、迁移、客户端生成，以及提供给 NestJS 的 `PrismaService` / `PrismaModule`。项目级说明请先看根目录 [README.md](../../README.md)。
 
-## Features
+## 当前导出
 
-- **Prisma Client**: Type-safe database access
-- **Migrations**: Database schema versioning with Prisma Migrate
-- **NestJS Integration**: Ready-to-use `PrismaService` and `PrismaModule`
+- `PrismaClient`
+- `PrismaService`
+- `PrismaModule`
+- Prisma 常见错误类型
+- `User` 类型
 
-## Usage
+## 目录结构
 
-### In NestJS Applications
-
-```typescript
-import {PrismaModule} from '@next-nest-turbo-auth-boilerplate/db';
-
-@Module({
-  imports: [PrismaModule],
-  // ...
-})
-export class AppModule {}
+```text
+prisma/
+  schema.prisma
+  migrations/
+  seed.ts
+scripts/
+  load-env.mjs
+src/
+  index.ts
+  prisma.module.ts
+  prisma.service.ts
 ```
 
-### Direct Prisma Client Usage
+## 常用命令
 
-```typescript
-import {PrismaClient} from '@next-nest-turbo-auth-boilerplate/db';
-
-const prisma = new PrismaClient();
+```bash
+npm run build -w packages/db
+npm run db:generate -w packages/db
+npm run migrate:dev -w packages/db
+npm run migrate:deploy -w packages/db
+npm run migrate:status -w packages/db
+npm run db:seed -w packages/db
+npm run db:studio -w packages/db
 ```
 
-## Scripts
+## 环境变量
 
-- `npm run db:generate` - Generate Prisma Client
-- `npm run db:push` - Push schema changes to database (development)
-- `npm run db:pull` - Pull schema from database
-- `npm run db:studio` - Open Prisma Studio
-- `npm run migrate:dev` - Create and apply migrations (development)
-- `npm run migrate:deploy` - Apply migrations (production)
-- `npm run migrate:status` - Check migration status
+必需项：
 
-## Environment Variables
+- `DATABASE_URL`
 
-Required:
+当前 Prisma 命令通过 `scripts/load-env.mjs` 从根级环境配置加载变量，因此要优先检查仓库根目录的 `.env.development` / `.env.production` 是否正确。
 
-- `DATABASE_URL` - PostgreSQL connection string
+## 当前数据模型
 
-Example:
-
-```
-DATABASE_URL="postgresql://user:password@localhost:5432/dbname?schema=public"
-```
+- `User`
+- `UserRole`
+- `mikro_orm_migrations`（兼容遗留表，已忽略）

@@ -1,44 +1,99 @@
 # Backend (NestJS)
 
-**Updated:** 2026-02-13
+**Updated:** 2026-04-04
 
 ## Entry
 
-- main.ts → AppModule, global ValidationPipe, PrismaExceptionFilter, Swagger
+- 启动文件：`src/main.ts`
+- 根模块：`src/app.module.ts`
+- 全局能力：
+  - `helmet`
+  - `compression`
+  - `cookie-parser`
+  - `ValidationPipe`
+  - `HttpExceptionFilter`
+  - `PrismaExceptionFilter`
+  - 全局前缀 `/api/v1`
+  - 可选 Swagger `/api/docs`
 
-## Modules
+## Module Breakdown
 
-| Module       | Path                    | Exports      |
-| ------------ | ----------------------- | ------------ |
-| AppModule    | app.module.ts           | AppModule    |
-| CommonModule | common/common.module.ts | CommonModule |
-| HealthModule | health/health.module.ts | HealthModule |
-| RedisModule  | redis/redis.module.ts   | RedisModule  |
+| 模块           | 位置                | 当前职责                            |
+| -------------- | ------------------- | ----------------------------------- |
+| `AppModule`    | `src/app.module.ts` | 汇总配置、Prisma、限流、业务模块    |
+| `AuthModule`   | `src/auth/`         | 登录、注册、JWT 签发与校验          |
+| `UsersModule`  | `src/users/`        | 当前用户查询与 DTO 转换             |
+| `HealthModule` | `src/health/`       | 健康检查与数据库连通性              |
+| `CommonModule` | `src/common/`       | 全局 logger、中间件、过滤器、装饰器 |
+| `RedisModule`  | `src/redis/`        | Redis 连接、发布/订阅能力           |
 
-## Structure
+## Source Layout
 
-```
+```text
 src/
   app.module.ts
   main.ts
-  config/           # app.config, validation.schema, ConfigKey
+  auth/
+    auth.controller.ts
+    auth.module.ts
+    auth.service.ts
+    decorators/
+    guards/
+    strategies/
   common/
-    decorators/     # ValidateHeader
-    filters/        # PrismaExceptionFilter
-    logger/         # LoggerMiddleware, LoggerModule, LoggerService
-  health/            # HealthController, HealthModule, PrismaHealthIndicator
-  redis/             # RedisModule, RedisService
-  utils/             # time.util
+    decorators/
+    filters/
+    logger/
+  config/
+    app.config.ts
+    config-key.enum.ts
+    readme.md
+    validation.schema.ts
+  health/
+    health.controller.ts
+    health.module.ts
+    prisma.health.ts
+  redis/
+    redis.module.ts
+    redis.service.ts
+  users/
+    users.controller.ts
+    users.module.ts
+    users.service.ts
+  utils/
+    time.util.ts
 ```
 
-## External Deps
+## Auth Model
 
-- @nestjs/\* (common, core, config, schedule, swagger, terminus, throttler)
-- @next-nest-turbo-auth-boilerplate/db
-- ioredis, joi, helmet, cookie-parser, uuid
+- 注册和登录都返回 `AuthResponseDto`
+- JWT payload 包含：
+  - `sub`
+  - `email`
+  - `role`
+- JWT 提取顺序：
+  1. `access_token` cookie
+  2. Bearer Token
 
-## Data
+## Configuration Notes
 
-- ORM: Prisma + PostgreSQL
-- Schema: packages/db/prisma/schema.prisma
-- Migrations: packages/db/prisma/migrations/
+- 配置键集中在 `src/config/config-key.enum.ts`
+- 校验 schema 位于 `src/config/validation.schema.ts`
+- 当前存在一个已知漂移：
+  - 配置键声明为 `FRONTEND_HOST`
+  - `app.config.ts` 实际读取的是 `process.env.HOST`
+
+这意味着当前 CORS 来源的自定义值并没有完全遵循文档里的变量名。
+
+## Data and Infrastructure
+
+- 数据访问来自 `@next-nest-turbo-auth-boilerplate/db`
+- Prisma schema 在 `packages/db/prisma/schema.prisma`
+- 健康检查会检测数据库可达性
+- Redis 服务同时维护 publisher / subscriber 两个连接
+
+## Current Gaps
+
+- 单元测试文件缺失
+- E2E 配置文件缺失
+- CORS 配置存在变量名漂移

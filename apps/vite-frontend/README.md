@@ -1,64 +1,50 @@
-# Vite Frontend Boilerplate
+# Vite Frontend
 
-A modern, fully-typed, and scalable frontend boilerplate built with:
+前端 workspace 只负责浏览器端 UI、路由、登录流和多语言，不负责任何服务端渲染逻辑。项目总览请先看根目录 [README.md](../../README.md)。
 
-- Vite
-- React
-- TypeScript
-- Tailwind CSS
-- React Hook Form
-- Zod
-- React Query
-- react-i18next (i18n, English + 中文)
+## 当前职责
 
----
+- 启动 Vite 开发服务器
+- 通过 React Router 管理基于 `/:locale` 的路由
+- 通过 React Query + Axios 请求后端
+- 使用 Zustand 保存用户态与全局 loading 状态
+- 使用 `react-i18next` 加载中英文资源
 
-## Features
+## 关键入口
 
-- API integration layer using **React Query**
-- Built-in **form validation** with Zod + React Hook Form
-- Strong typing throughout
-- Tailwind + Radix UI components
-- Localization with react-i18next (English, 中文)
+| 文件                              | 作用                               |
+| --------------------------------- | ---------------------------------- |
+| `src/main.tsx`                    | 挂载 Router、样式和 i18n           |
+| `src/router/index.tsx`            | 定义页面路由与懒加载               |
+| `src/lib/axios.ts`                | API client、401 处理、loading 计数 |
+| `src/layouts/ProvidersLayout.tsx` | 集中挂载 providers                 |
+| `vite.config.ts`                  | 端口、别名、代理、构建分块         |
 
-## Examples
+## 当前页面范围
 
-See the codebase for examples using Zod, React Hook Form, React Query, and react-i18next.
+- `/en` 或 `/zh`
+- `/:locale/login`
+- `/:locale/register`
+- 错误页与 404
 
----
+`Header` 仍是占位，`Footer` 的一部分链接尚未对应真实页面。
 
-## Build Configuration
+## API 访问方式
 
-### Production Optimization
+- Axios `baseURL` 固定为 `/api/v1`
+- 开发环境依赖 Vite 代理把 `/api/v1` 转发到 `http://localhost:4000`
+- 根级 `.env.development` 中虽然存在 `VITE_BACKEND_URL`，但前端当前并未消费它
 
-The Vite build is optimized for production with code splitting strategy:
+## 常用命令
 
-```typescript
-// vite.config.ts
-build: {
-  target: 'es2022',
-  sourcemap: false,
-  minify: 'esbuild',
-  rollupOptions: {
-    output: {
-      manualChunks: {
-        'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-        'vendor-radix': ['@radix-ui/...'],
-        'vendor-query': ['@tanstack/react-query', '@tanstack/react-query-devtools'],
-      },
-    },
-  },
-}
+```bash
+npm run dev -w apps/vite-frontend
+npm run build -w apps/vite-frontend
+npm run lint -w apps/vite-frontend
 ```
 
-**Benefits:**
+## 当前限制
 
-- Reduces initial bundle size by splitting vendor code
-- Enables better browser caching (vendor chunks rarely change)
-- Improves loading performance for end users
-
-**Customization:**
-
-- Adjust `manualChunks` if you add large dependencies
-- Consider splitting by route for larger applications
-- Target can be adjusted based on browser support requirements
+- 没有实际 Playwright 测试套件
+- 仍有迁移历史文件，不应把它们视作当前状态文档
+- `'use client'` 文件头是迁移残留，不代表当前仍运行在 Next.js 上

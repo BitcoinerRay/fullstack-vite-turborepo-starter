@@ -1,59 +1,48 @@
-# ⚙️ Config Module
+# Config Module
 
-The Config Module serves as a centralized and type-safe configuration layer for the entire application. It ensures all required environment variables are validated, structured, and made accessible to services and modules in a consistent and reliable way.
+这份说明只描述当前后端配置模块的真实实现，不再沿用旧模板里已经不存在的配置域。
 
----
+## 当前职责
 
-## 🧠 Core Principles
+- 定义配置键：`config-key.enum.ts`
+- 读取根级环境文件：`../../.env.${NODE_ENV}` 和 `../../.env`
+- 用 Joi 校验启动时的环境变量
+- 通过 `ConfigService` 暴露统一访问入口
 
-- **Validation-first**: Uses Joi schema validation to enforce correct and complete environment configuration at startup.
-- **Environment-aware**: Adjusts required/optional variables based on the current `NODE_ENV` (`development`, `staging`, `production`).
-- **Enum-based access**: Prevents typos and magic strings by referencing all config keys via a strongly-typed `ConfigKey` enum.
-- **Scoped and structured**: Configuration values are grouped by domain (e.g., Postgres, Mail, JWT) and returned in a normalized shape.
+## 当前覆盖的配置域
 
----
+- App
+  - `NODE_ENV`
+  - `PORT`
+  - `ENABLE_SWAGGER`
+  - `FRONTEND_HOST`
+- Database
+  - `DATABASE_URL`
+  - `POSTGRES_*`
+- Redis
+  - `REDIS_URL`
+  - `REDIS_HOST`
+  - `REDIS_PORT`
+  - `REDIS_PASSWORD`
+- Auth
+  - `JWT_SECRET`
+  - `JWT_EXPIRES_IN`
 
-## 🧩 How It Works
+## 当前实现细节
 
-1. **Defines a `ConfigKey` enum** for all valid config keys.
-2. **Loads `.env` values** using NestJS’s `ConfigModule`.
-3. **Maps values** to their associated keys via a factory function.
-4. **Validates** those values against a comprehensive Joi schema at runtime.
-5. **Provides access** to config values throughout the app using `ConfigService.get<>()`.
+1. `ConfigModule.forRoot()` 在 `AppModule` 中注册为全局模块
+2. Joi schema 位于 `validation.schema.ts`
+3. 配置工厂位于 `app.config.ts`
+4. 各业务模块通过 `ConfigService.get()` 或 `getOrThrow()` 读取配置
 
----
+## 已知问题
 
-## 🧪 Validation Strategy
+- 配置键是 `FRONTEND_HOST`，但 `app.config.ts` 当前读取的是 `process.env.HOST`
+- 这会导致文档中声明的 `FRONTEND_HOST` 与实际行为不完全一致
 
-- Type constraints: strings, numbers, booleans
-- Value constraints: port ranges, enum values
-- Conditional rules: e.g., mail credentials are optional in `development` but required otherwise
-- Defaults applied where appropriate (e.g., default port, timezone)
-
----
-
-## 🔒 Environment Sensitivity
-
-The module dynamically alters requirements based on the `NODE_ENV`:
-
-- In `development`, services like email can function with mock values.
-- In `production`, all security-sensitive values (e.g., email credentials) are strictly enforced.
-
----
-
-## 🧱 Config Domains
-
-While no internal knowledge is required to use the module, configuration is logically grouped into:
-
-- **App**: environment, port, frontend host
-- **Database**: host, user, password, port, timezone, debug mode
-- **Email**: SMTP connection info
-
----
-
-## ✅ Example Usage
+## 使用示例
 
 ```ts
 const port = configService.get<number>(ConfigKey.PORT);
-const isDebug = configService.get<boolean>(ConfigKey.POSTGRES_DEBUG_MODE);
+const jwtSecret = configService.getOrThrow<string>(ConfigKey.JWT_SECRET);
 ```
