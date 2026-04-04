@@ -38,6 +38,22 @@
     "ts-node": "10.9.2",
     "turbo": "2.8.7"
   },
+  "overrides": {
+    "@nestjs/common": "11.1.18",
+    "@nestjs/core": "11.1.18",
+    "@nestjs/platform-express": "11.1.18",
+    "file-type": "21.3.4",
+    "handlebars": "4.7.9",
+    "lodash": "4.18.1",
+    "minimatch": "10.2.5",
+    "multer": "2.1.1",
+    "path-to-regexp": "8.4.2",
+    "picomatch": "4.0.4",
+    "rollup": "4.60.1",
+    "serialize-javascript": "7.0.5",
+    "undici": "7.24.7",
+    "yaml": "2.8.3"
+  },
   "engines": {
     "node": ">=24.0.0",
     "npm": ">=11.0.0"
