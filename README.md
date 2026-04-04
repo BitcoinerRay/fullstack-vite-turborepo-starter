@@ -157,23 +157,23 @@ REDIS_PASSWORD=redis_pass
 
 ### 当前变量清单
 
-| 变量                | 主要消费者                            | 当前状态         | 说明                                                                         |
-| ------------------- | ------------------------------------- | ---------------- | ---------------------------------------------------------------------------- |
-| `NODE_ENV`          | NestJS                                | 已使用           | 决定读取 `.env.development` / `.env.production`，也影响 cookie `secure` 行为 |
-| `PORT`              | NestJS                                | 已使用           | 控制后端监听端口，默认是 `4000`                                              |
-| `ENABLE_SWAGGER`    | NestJS                                | 已使用           | 控制是否开启 Swagger UI                                                      |
-| `DATABASE_URL`      | Prisma / NestJS                       | 已使用           | Prisma datasource 与后端数据库连接串                                         |
-| `REDIS_URL`         | NestJS                                | 已使用           | Redis 优先使用完整 URL                                                       |
-| `JWT_SECRET`        | NestJS Auth                           | 已使用           | JWT 签名密钥，长度需至少 32 个字符                                           |
-| `FRONTEND_HOST`     | NestJS CORS                           | 已使用           | 当前优先读取 `FRONTEND_HOST`，并兼容旧的 `HOST` 作为回退来源                 |
-| `VITE_BACKEND_URL`  | Frontend                              | 当前未被代码消费 | 前端实际固定请求相对路径 `/api/v1`，开发态依赖 Vite 代理                     |
-| `POSTGRES_PORT`     | Docker Compose / Prisma fallback 配置 | 仅 Docker 覆盖   | 影响容器映射端口                                                             |
-| `POSTGRES_DB`       | Docker Compose                        | 仅 Docker 覆盖   | 决定容器初始化数据库名                                                       |
-| `POSTGRES_USER`     | Docker Compose                        | 仅 Docker 覆盖   | 决定容器数据库用户                                                           |
-| `POSTGRES_PASSWORD` | Docker Compose                        | 仅 Docker 覆盖   | 决定容器数据库密码                                                           |
-| `POSTGRES_TIMEZONE` | Docker Compose / Nest config          | 部分已使用       | 容器使用它设置时区，应用也声明了对应配置键                                   |
-| `REDIS_PORT`        | Docker Compose                        | 仅 Docker 覆盖   | 控制 Redis 映射端口                                                          |
-| `REDIS_PASSWORD`    | Docker Compose / Redis fallback 配置  | 已使用           | Redis URL 缺失时可走分散配置                                                 |
+| 变量                | 主要消费者                            | 当前状态       | 说明                                                                         |
+| ------------------- | ------------------------------------- | -------------- | ---------------------------------------------------------------------------- |
+| `NODE_ENV`          | NestJS                                | 已使用         | 决定读取 `.env.development` / `.env.production`，也影响 cookie `secure` 行为 |
+| `PORT`              | NestJS                                | 已使用         | 控制后端监听端口，默认是 `4000`                                              |
+| `ENABLE_SWAGGER`    | NestJS                                | 已使用         | 控制是否开启 Swagger UI                                                      |
+| `DATABASE_URL`      | Prisma / NestJS                       | 已使用         | Prisma datasource 与后端数据库连接串                                         |
+| `REDIS_URL`         | NestJS                                | 已使用         | Redis 优先使用完整 URL                                                       |
+| `JWT_SECRET`        | NestJS Auth                           | 已使用         | JWT 签名密钥，长度需至少 32 个字符                                           |
+| `FRONTEND_HOST`     | NestJS CORS                           | 已使用         | 当前优先读取 `FRONTEND_HOST`，并兼容旧的 `HOST` 作为回退来源                 |
+| `VITE_BACKEND_URL`  | Frontend                              | 已使用         | 开发环境用于 Vite 代理目标，非开发环境用于前端 API client 计算后端基地址     |
+| `POSTGRES_PORT`     | Docker Compose / Prisma fallback 配置 | 仅 Docker 覆盖 | 影响容器映射端口                                                             |
+| `POSTGRES_DB`       | Docker Compose                        | 仅 Docker 覆盖 | 决定容器初始化数据库名                                                       |
+| `POSTGRES_USER`     | Docker Compose                        | 仅 Docker 覆盖 | 决定容器数据库用户                                                           |
+| `POSTGRES_PASSWORD` | Docker Compose                        | 仅 Docker 覆盖 | 决定容器数据库密码                                                           |
+| `POSTGRES_TIMEZONE` | Docker Compose / Nest config          | 部分已使用     | 容器使用它设置时区，应用也声明了对应配置键                                   |
+| `REDIS_PORT`        | Docker Compose                        | 仅 Docker 覆盖 | 控制 Redis 映射端口                                                          |
+| `REDIS_PASSWORD`    | Docker Compose / Redis fallback 配置  | 已使用         | Redis URL 缺失时可走分散配置                                                 |
 
 ### 当前不应再照做的旧流程
 
@@ -219,9 +219,9 @@ REDIS_PASSWORD=redis_pass
 ### 前端请求链路
 
 - 前端 API 客户端在 `apps/vite-frontend/src/lib/axios.ts`
-- `axiosInstance` 的 `baseURL` 固定为 `/api/v1`
-- 开发环境下，Vite 在 `apps/vite-frontend/vite.config.ts` 里把 `/api/v1` 代理到 `http://localhost:4000`
-- 这意味着前端当前并不依赖 `VITE_BACKEND_URL`
+- `axiosInstance` 在开发环境下请求相对路径 `/api/v1`
+- 非开发环境下，前端会基于 `VITE_BACKEND_URL` 计算 API 基地址
+- Vite 开发代理同样会读取 `VITE_BACKEND_URL` 作为 `/api/v1` 的后端目标
 
 ### 后端启动链路
 
@@ -297,11 +297,10 @@ REDIS_PASSWORD=redis_pass
 
 ### P1：短期内应收敛
 
-| 问题                                            | 影响                                      | 证据                                                                                    | 建议动作                                               |
-| ----------------------------------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| 环境变量漂移：`VITE_BACKEND_URL` 已声明但未消费 | 容易让维护者误以为前端可直接切换 API 地址 | `.env.development`、`apps/vite-frontend/src/lib/axios.ts`                               | 要么接入变量，要么删除旧变量并把代理策略写死到文档     |
-| UI 占位未完成：Header 无导航、Footer 链接无页面 | 首屏信息架构不完整，点击后直接进入 404    | `apps/vite-frontend/src/components/header/header.component.tsx`、`footer.component.tsx` | 明确导航需求并补齐最小可用页面或移除假链接             |
-| 文档漂移                                        | 新成员很难判断哪份说明可信                | 旧版 `docs/`、`codemaps/`、workspace README                                             | 继续坚持“根 README 为事实入口”，其余文档只保留局部补充 |
+| 问题                                            | 影响                                   | 证据                                                                                    | 建议动作                                               |
+| ----------------------------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| UI 占位未完成：Header 无导航、Footer 链接无页面 | 首屏信息架构不完整，点击后直接进入 404 | `apps/vite-frontend/src/components/header/header.component.tsx`、`footer.component.tsx` | 明确导航需求并补齐最小可用页面或移除假链接             |
+| 文档漂移                                        | 新成员很难判断哪份说明可信             | 旧版 `docs/`、`codemaps/`、workspace README                                             | 继续坚持“根 README 为事实入口”，其余文档只保留局部补充 |
 
 ### P2：可作为下一轮工程治理
 

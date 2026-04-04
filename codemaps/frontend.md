@@ -120,5 +120,5 @@ src/
   - `vendor-react`
   - `vendor-radix`
   - `vendor-query`
-- `VITE_BACKEND_URL` 目前未被前端代码消费
+- `VITE_BACKEND_URL` 当前同时用于 Vite 开发代理和非开发环境下的 API 基地址计算
 - 开发态是否能访问后端，主要取决于 Vite 代理和后端 `4000` 端口是否可用
