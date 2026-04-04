@@ -112,7 +112,7 @@ src/
 - `Header` 仍然是占位组件，没有真实导航
 - `Footer` 包含若干尚未实现的路由链接
 - 代码里仍残留若干 `'use client'` 文件头，这是迁移遗留，不再代表 Next.js 运行时语义
-- 前端当前没有实际 Playwright 测试资产
+- 前端当前已接入一条 Playwright smoke test，覆盖范围仍偏轻量
 
 ## Build Notes
 

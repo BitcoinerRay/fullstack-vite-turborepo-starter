@@ -45,6 +45,6 @@ npm run lint -w apps/vite-frontend
 
 ## 当前限制
 
-- 没有实际 Playwright 测试套件
+- 当前只有一条 Playwright smoke test，覆盖范围仍然偏轻量
 - 仍有迁移历史文件，不应把它们视作当前状态文档
 - `'use client'` 文件头是迁移残留，不代表当前仍运行在 Next.js 上

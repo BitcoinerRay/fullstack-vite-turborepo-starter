@@ -53,6 +53,5 @@ npm run lint -w apps/nestjs-backend
 
 ## 当前限制
 
-- 没有单元测试文件
-- `test:e2e` 脚本引用的 `test/jest-e2e.json` 当前不存在
 - CORS 环境变量名与实现不完全一致
+- 当前测试基线仍然偏轻量，主要覆盖健康检查链路
