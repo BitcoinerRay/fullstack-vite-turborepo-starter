@@ -39,7 +39,7 @@ Swagger 地址：
 
 当前需要特别注意：
 
-- `FRONTEND_HOST` 这个配置键在代码里存在实现漂移
+- `FRONTEND_HOST` 现在是后端 CORS 来源的首选配置键，并兼容旧的 `HOST` 作为回退
 - 数据库与 Redis 地址以根级 env 为准
 - `JWT_SECRET` 是启动必需项
 
