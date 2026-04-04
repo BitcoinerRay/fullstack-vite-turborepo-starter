@@ -25,15 +25,17 @@
 - `/en` 或 `/zh`
 - `/:locale/login`
 - `/:locale/register`
+- `/:locale/about`、`/:locale/contact`、`/:locale/privacy`
+- `/:locale/terms`、`/:locale/imprint`
 - 错误页与 404
 
-`Header` 仍是占位，`Footer` 的一部分链接尚未对应真实页面。
+`Header` 已提供基础导航，`Footer` 链接也已对齐到现有信息页。
 
 ## API 访问方式
 
-- Axios `baseURL` 固定为 `/api/v1`
-- 开发环境依赖 Vite 代理把 `/api/v1` 转发到 `http://localhost:4000`
-- 根级 `.env.development` 中虽然存在 `VITE_BACKEND_URL`，但前端当前并未消费它
+- 开发环境下，Axios 请求相对路径 `/api/v1`
+- Vite 会读取 `VITE_BACKEND_URL`，把 `/api/v1` 代理到对应后端地址
+- 非开发环境下，前端 API client 会基于 `VITE_BACKEND_URL` 计算完整后端基地址
 
 ## 常用命令
 
@@ -46,5 +48,4 @@ npm run lint -w apps/vite-frontend
 ## 当前限制
 
 - 当前只有一条 Playwright smoke test，覆盖范围仍然偏轻量
-- 仍有迁移历史文件，不应把它们视作当前状态文档
-- `'use client'` 文件头是迁移残留，不代表当前仍运行在 Next.js 上
+- `apps/vite-frontend/MIGRATION-SUMMARY.md` 是迁移归档，不应把它当成当前实现说明

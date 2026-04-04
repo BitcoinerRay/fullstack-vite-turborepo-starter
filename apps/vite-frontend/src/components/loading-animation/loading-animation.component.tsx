@@ -1,5 +1,3 @@
-'use client';
-
 import {type JSX} from 'react';
 import {Loader2} from 'lucide-react';
 import {useLoadingStore} from '@/store/loading/loading.store';

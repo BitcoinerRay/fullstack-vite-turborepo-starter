@@ -27,21 +27,16 @@ async function main() {
     }
   }
 
-  function copyFile(src, dest, {overwrite}) {
-    if (!fileExists(src)) {
-      console.warn(`跳过：未找到 ${src}`);
-      return {copied: false, reason: 'src-missing'};
+  function writeTextFile(filePath, content, {overwrite}) {
+    if (fileExists(filePath) && !overwrite) {
+      console.log(`跳过：已存在 ${filePath}`);
+      return {written: false, reason: 'dest-exists'};
     }
 
-    if (fileExists(dest) && !overwrite) {
-      console.log(`跳过：已存在 ${dest}`);
-      return {copied: false, reason: 'dest-exists'};
-    }
-
-    fs.mkdirSync(path.dirname(dest), {recursive: true});
-    fs.copyFileSync(src, dest);
-    console.log(`已复制: ${src} -> ${dest}`);
-    return {copied: true};
+    fs.mkdirSync(path.dirname(filePath), {recursive: true});
+    fs.writeFileSync(filePath, content);
+    console.log(`已写入: ${filePath}`);
+    return {written: true};
   }
 
   function run(command, {cwd}) {
@@ -186,24 +181,26 @@ async function main() {
   console.log(`已修改: ${pkgPaths.shared}`);
   console.log('workspace 的 package.json 已更新（不会再扫描 node_modules）。');
 
-  const pairs = [
-    {
-      src: path.join(root, '.env.example'),
-      dest: path.join(root, '.env'),
-    },
-    {
-      src: path.join(root, 'apps', 'vite-frontend', '.env.example'),
-      dest: path.join(root, 'apps', 'vite-frontend', '.env'),
-    },
-    {
-      src: path.join(root, 'apps', 'nestjs-backend', '.env.example'),
-      dest: path.join(root, 'apps', 'nestjs-backend', '.env'),
-    },
-  ];
+  const dockerEnvPath = path.join(root, '.env');
+  const dockerEnvTemplate = `# Optional Docker Compose overrides for local infrastructure
+# Runtime app config is read from the tracked root env files:
+# - .env.development
+# - .env.production
+#
+# Keep this file only if you need custom local ports or credentials.
+POSTGRES_PORT=5432
+POSTGRES_DB=nest_boilerplate
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_TIMEZONE=UTC
+REDIS_PORT=6379
+REDIS_PASSWORD=redis_pass
+`;
 
-  for (const {src, dest} of pairs) {
-    copyFile(src, dest, {overwrite: false});
-  }
+  writeTextFile(dockerEnvPath, dockerEnvTemplate, {overwrite: false});
+  console.log(
+    '说明：应用运行时默认读取根目录 .env.development / .env.production；根目录 .env 仅用于 Docker Compose 覆盖。',
+  );
 
   try {
     console.log('开始构建 packages/db ...');

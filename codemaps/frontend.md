@@ -109,10 +109,9 @@ src/
 
 ## Current Limitations
 
-- `Header` 仍然是占位组件，没有真实导航
-- `Footer` 包含若干尚未实现的路由链接
-- 代码里仍残留若干 `'use client'` 文件头，这是迁移遗留，不再代表 Next.js 运行时语义
 - 前端当前已接入一条 Playwright smoke test，覆盖范围仍偏轻量
+- `apps/vite-frontend/MIGRATION-SUMMARY.md` 是历史迁移记录，不应当作现状文档
+- 当前已经补齐基础导航和信息页，但整体页面范围仍然偏轻量
 
 ## Build Notes
 
@@ -120,5 +119,5 @@ src/
   - `vendor-react`
   - `vendor-radix`
   - `vendor-query`
-- `VITE_BACKEND_URL` 目前未被前端代码消费
+- `VITE_BACKEND_URL` 当前同时用于 Vite 开发代理和非开发环境下的 API 基地址计算
 - 开发态是否能访问后端，主要取决于 Vite 代理和后端 `4000` 端口是否可用
