@@ -25,9 +25,11 @@
 - `/en` 或 `/zh`
 - `/:locale/login`
 - `/:locale/register`
+- `/:locale/about`、`/:locale/contact`、`/:locale/privacy`
+- `/:locale/terms`、`/:locale/imprint`
 - 错误页与 404
 
-`Header` 仍是占位，`Footer` 的一部分链接尚未对应真实页面。
+`Header` 已提供基础导航，`Footer` 链接也已对齐到现有信息页。
 
 ## API 访问方式
 
@@ -45,5 +47,5 @@ npm run lint -w apps/vite-frontend
 
 ## 当前限制
 
-- 没有实际 Playwright 测试套件
+- 当前只有一条 Playwright smoke test，覆盖范围仍然偏轻量
 - `apps/vite-frontend/MIGRATION-SUMMARY.md` 是迁移归档，不应把它当成当前实现说明

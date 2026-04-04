@@ -12,8 +12,8 @@
 > 仓库现状快照（验证日期：2026-04-04）
 >
 > - `npm run build` 可通过
-> - `npm run test:unit` 当前失败，原因是后端没有单元测试文件
-> - `npm run test:e2e` 当前失败，原因是后端缺少 `test/jest-e2e.json`，前端也没有实际 Playwright 套件
+> - `npm run test:unit` 可通过，当前包含一条后端健康检查单测
+> - `npm run test:e2e` 可通过，当前包含后端 Jest E2E smoke test 和前端 Playwright smoke test
 > - `npm run lint` 在当前工作区不能作为基线结论，因为仓库里已有一个未提交的后端文件改动
 
 ## 项目定位
@@ -204,15 +204,15 @@ REDIS_PASSWORD=redis_pass
 
 ### 存在前提或当前缺口
 
-| 命令                    | 当前状态               | 说明                                                                           |
-| ----------------------- | ---------------------- | ------------------------------------------------------------------------------ |
-| `npm run lint`          | 受当前工作区脏文件影响 | 仓库里已有未提交的后端文件改动，当前不能把 lint 结果当成干净基线               |
-| `npm run lint:fix`      | 谨慎使用               | 会改写文件，不适合在你还没确认工作区状态时直接跑                               |
-| `npm run test:unit`     | 当前失败               | 后端没有单元测试文件，Jest 直接以失败退出                                      |
-| `npm run test:unit:cov` | 当前不可用             | 依赖同一套缺失的单测资产                                                       |
-| `npm run test:e2e`      | 当前失败               | 后端缺少 `test/jest-e2e.json`，前端也没有实际 Playwright 套件                  |
-| `npm run init`          | 适合模板二次定制时使用 | 会重命名 workspace 包名、重写内部依赖，并生成可选的根级 `.env` Docker 覆盖模板 |
-| `npm run copilot:sync`  | 仓库维护脚本           | 只在你明确知道它要同步什么时再用                                               |
+| 命令                    | 当前状态               | 说明                                                                                                                  |
+| ----------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint`          | 受当前工作区脏文件影响 | 仓库里已有未提交的后端文件改动，当前不能把 lint 结果当成干净基线                                                      |
+| `npm run lint:fix`      | 谨慎使用               | 会改写文件，不适合在你还没确认工作区状态时直接跑                                                                      |
+| `npm run test:unit`     | 可直接使用             | 当前已接通后端健康检查单测                                                                                            |
+| `npm run test:unit:cov` | 有前提但可用           | 基于同一套测试资产；本轮未单独重跑 coverage                                                                           |
+| `npm run test:e2e`      | 可直接使用             | 当前已接通后端 Jest E2E smoke test 与前端 Playwright smoke test；首次运行前可能需要 `npx playwright install chromium` |
+| `npm run init`          | 适合模板二次定制时使用 | 会重命名 workspace 包名、重写内部依赖，并生成可选的根级 `.env` Docker 覆盖模板                                       |
+| `npm run copilot:sync`  | 仓库维护脚本           | 只在你明确知道它要同步什么时再用                                                                                      |
 
 ## 运行机制拆解
 

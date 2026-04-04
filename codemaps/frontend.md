@@ -109,10 +109,9 @@ src/
 
 ## Current Limitations
 
-- `Header` 仍然是占位组件，没有真实导航
-- `Footer` 包含若干尚未实现的路由链接
+- 前端当前已接入一条 Playwright smoke test，覆盖范围仍偏轻量
 - `apps/vite-frontend/MIGRATION-SUMMARY.md` 是历史迁移记录，不应当作现状文档
-- 前端当前没有实际 Playwright 测试资产
+- 当前已经补齐基础导航和信息页，但整体页面范围仍然偏轻量
 
 ## Build Notes
 

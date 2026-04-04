@@ -135,6 +135,6 @@ npm run infra:start
 
 ## 当前运行手册中的限制
 
-- 本仓库当前没有可用的自动化单测/E2E 流程可作为运维验收
+- 本仓库当前已有最小化自动化测试基线，但前端 E2E 首次运行前可能需要执行 `npx playwright install chromium`
 - `npm run init` 更适合模板二次定制，不是日常运维恢复命令
 - 根级 `.env.production` 目前更像示例值，而不是经过真实部署验证的生产模板
