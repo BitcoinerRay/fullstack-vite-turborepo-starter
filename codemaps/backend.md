@@ -79,11 +79,8 @@ src/
 
 - 配置键集中在 `src/config/config-key.enum.ts`
 - 校验 schema 位于 `src/config/validation.schema.ts`
-- 当前存在一个已知漂移：
-  - 配置键声明为 `FRONTEND_HOST`
-  - `app.config.ts` 实际读取的是 `process.env.HOST`
-
-这意味着当前 CORS 来源的自定义值并没有完全遵循文档里的变量名。
+- `FRONTEND_HOST` 是 CORS 来源的首选配置键
+- 为兼容旧配置，`app.config.ts` 仍支持 `HOST` 作为回退来源
 
 ## Data and Infrastructure
 

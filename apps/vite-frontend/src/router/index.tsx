@@ -10,6 +10,10 @@ const Home = React.lazy(async () => {
   const mod = await import('../pages/Home.tsx');
   return {default: mod.Home};
 });
+const InfoPage = React.lazy(async () => {
+  const mod = await import('../pages/info-page.tsx');
+  return {default: mod.InfoPage};
+});
 const LoginPage = React.lazy(async () => {
   const mod = await import('../pages/auth/LoginPage.tsx');
   return {default: mod.LoginPage};
@@ -29,6 +33,14 @@ const NotFound = React.lazy(async () => {
 
 function SuspenseWrapper({children}: {readonly children: React.ReactNode}): JSX.Element {
   return <React.Suspense fallback={<LoadingAnimation />}>{children}</React.Suspense>;
+}
+
+function infoPageElement(pageKey: 'about' | 'contact' | 'imprint' | 'privacy' | 'terms'): JSX.Element {
+  return (
+    <SuspenseWrapper>
+      <InfoPage pageKey={pageKey} />
+    </SuspenseWrapper>
+  );
 }
 
 export const router = createBrowserRouter([
@@ -57,6 +69,26 @@ export const router = createBrowserRouter([
                 </SuspenseWrapper>
               </PrivateRoute>
             ),
+          },
+          {
+            path: 'about',
+            element: infoPageElement('about'),
+          },
+          {
+            path: 'contact',
+            element: infoPageElement('contact'),
+          },
+          {
+            path: 'imprint',
+            element: infoPageElement('imprint'),
+          },
+          {
+            path: 'privacy',
+            element: infoPageElement('privacy'),
+          },
+          {
+            path: 'terms',
+            element: infoPageElement('terms'),
           },
         ],
       },
