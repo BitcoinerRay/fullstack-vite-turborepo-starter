@@ -157,23 +157,23 @@ REDIS_PASSWORD=redis_pass
 
 ### 当前变量清单
 
-| 变量                | 主要消费者                            | 当前状态         | 说明                                                                                                                            |
-| ------------------- | ------------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `NODE_ENV`          | NestJS                                | 已使用           | 决定读取 `.env.development` / `.env.production`，也影响 cookie `secure` 行为                                                    |
-| `PORT`              | NestJS                                | 已使用           | 控制后端监听端口，默认是 `4000`                                                                                                 |
-| `ENABLE_SWAGGER`    | NestJS                                | 已使用           | 控制是否开启 Swagger UI                                                                                                         |
-| `DATABASE_URL`      | Prisma / NestJS                       | 已使用           | Prisma datasource 与后端数据库连接串                                                                                            |
-| `REDIS_URL`         | NestJS                                | 已使用           | Redis 优先使用完整 URL                                                                                                          |
-| `JWT_SECRET`        | NestJS Auth                           | 已使用           | JWT 签名密钥，长度需至少 32 个字符                                                                                              |
-| `FRONTEND_HOST`     | NestJS CORS                           | 存在实现漂移     | 配置键定义为 `FRONTEND_HOST`，但 `app.config.ts` 实际读取的是 `process.env.HOST`，所以自定义 `FRONTEND_HOST` 当前不会按预期生效 |
-| `VITE_BACKEND_URL`  | Frontend                              | 当前未被代码消费 | 前端实际固定请求相对路径 `/api/v1`，开发态依赖 Vite 代理                                                                        |
-| `POSTGRES_PORT`     | Docker Compose / Prisma fallback 配置 | 仅 Docker 覆盖   | 影响容器映射端口                                                                                                                |
-| `POSTGRES_DB`       | Docker Compose                        | 仅 Docker 覆盖   | 决定容器初始化数据库名                                                                                                          |
-| `POSTGRES_USER`     | Docker Compose                        | 仅 Docker 覆盖   | 决定容器数据库用户                                                                                                              |
-| `POSTGRES_PASSWORD` | Docker Compose                        | 仅 Docker 覆盖   | 决定容器数据库密码                                                                                                              |
-| `POSTGRES_TIMEZONE` | Docker Compose / Nest config          | 部分已使用       | 容器使用它设置时区，应用也声明了对应配置键                                                                                      |
-| `REDIS_PORT`        | Docker Compose                        | 仅 Docker 覆盖   | 控制 Redis 映射端口                                                                                                             |
-| `REDIS_PASSWORD`    | Docker Compose / Redis fallback 配置  | 已使用           | Redis URL 缺失时可走分散配置                                                                                                    |
+| 变量                | 主要消费者                            | 当前状态         | 说明                                                                         |
+| ------------------- | ------------------------------------- | ---------------- | ---------------------------------------------------------------------------- |
+| `NODE_ENV`          | NestJS                                | 已使用           | 决定读取 `.env.development` / `.env.production`，也影响 cookie `secure` 行为 |
+| `PORT`              | NestJS                                | 已使用           | 控制后端监听端口，默认是 `4000`                                              |
+| `ENABLE_SWAGGER`    | NestJS                                | 已使用           | 控制是否开启 Swagger UI                                                      |
+| `DATABASE_URL`      | Prisma / NestJS                       | 已使用           | Prisma datasource 与后端数据库连接串                                         |
+| `REDIS_URL`         | NestJS                                | 已使用           | Redis 优先使用完整 URL                                                       |
+| `JWT_SECRET`        | NestJS Auth                           | 已使用           | JWT 签名密钥，长度需至少 32 个字符                                           |
+| `FRONTEND_HOST`     | NestJS CORS                           | 已使用           | 当前优先读取 `FRONTEND_HOST`，并兼容旧的 `HOST` 作为回退来源                 |
+| `VITE_BACKEND_URL`  | Frontend                              | 当前未被代码消费 | 前端实际固定请求相对路径 `/api/v1`，开发态依赖 Vite 代理                     |
+| `POSTGRES_PORT`     | Docker Compose / Prisma fallback 配置 | 仅 Docker 覆盖   | 影响容器映射端口                                                             |
+| `POSTGRES_DB`       | Docker Compose                        | 仅 Docker 覆盖   | 决定容器初始化数据库名                                                       |
+| `POSTGRES_USER`     | Docker Compose                        | 仅 Docker 覆盖   | 决定容器数据库用户                                                           |
+| `POSTGRES_PASSWORD` | Docker Compose                        | 仅 Docker 覆盖   | 决定容器数据库密码                                                           |
+| `POSTGRES_TIMEZONE` | Docker Compose / Nest config          | 部分已使用       | 容器使用它设置时区，应用也声明了对应配置键                                   |
+| `REDIS_PORT`        | Docker Compose                        | 仅 Docker 覆盖   | 控制 Redis 映射端口                                                          |
+| `REDIS_PASSWORD`    | Docker Compose / Redis fallback 配置  | 已使用           | Redis URL 缺失时可走分散配置                                                 |
 
 ### 当前不应再照做的旧流程
 
@@ -289,10 +289,11 @@ REDIS_PASSWORD=redis_pass
 
 ### P0：应优先处理
 
-| 问题                                                   | 影响                        | 证据                                                                  | 建议动作                                                                 |
-| ------------------------------------------------------ | --------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| 配置漂移：`FRONTEND_HOST` 与 `process.env.HOST` 不一致 | 自定义 CORS 来源可能不生效  | `apps/nestjs-backend/src/config/app.config.ts`                        | 统一配置键与 env 读取逻辑，并补回验证说明                                |
-| 测试资产缺失                                           | CI 与本地质量回归手段不完整 | `apps/nestjs-backend/package.json`、`apps/vite-frontend/package.json` | 至少补齐一个后端 Jest 单测、E2E 配置文件和一个前端 Playwright smoke test |
+| 问题                                                   | 影响                         | 证据                                                                  | 建议动作                                                                 |
+| ------------------------------------------------------ | ---------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| 配置漂移：`FRONTEND_HOST` 与 `process.env.HOST` 不一致 | 自定义 CORS 来源可能不生效   | `apps/nestjs-backend/src/config/app.config.ts`                        | 统一配置键与 env 读取逻辑，并补回验证说明                                |
+| 初始化流程漂移：`init` 依赖不存在的 `.env.example`     | 新手照文档执行会失败或被误导 | `scripts/init.js`                                                     | 修正脚本或移除复制逻辑，再决定是否恢复推荐入口                           |
+| 测试资产缺失                                           | CI 与本地质量回归手段不完整  | `apps/nestjs-backend/package.json`、`apps/vite-frontend/package.json` | 至少补齐一个后端 Jest 单测、E2E 配置文件和一个前端 Playwright smoke test |
 
 ### P1：短期内应收敛
 
