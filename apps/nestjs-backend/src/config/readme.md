@@ -35,10 +35,10 @@
 3. 配置工厂位于 `app.config.ts`
 4. 各业务模块通过 `ConfigService.get()` 或 `getOrThrow()` 读取配置
 
-## 已知问题
+## 兼容性说明
 
-- 配置键是 `FRONTEND_HOST`，但 `app.config.ts` 当前读取的是 `process.env.HOST`
-- 这会导致文档中声明的 `FRONTEND_HOST` 与实际行为不完全一致
+- `FRONTEND_HOST` 是当前首选配置键
+- 为了兼容旧配置，`app.config.ts` 仍会在 `FRONTEND_HOST` 缺失时回退读取 `HOST`
 
 ## 使用示例
 

@@ -58,7 +58,7 @@ npm run infra:ps
 | Swagger 打不开           | `ENABLE_SWAGGER`            | 确认当前启动模式读取的是根级 `.env.development` 或 `.env.production`                           |
 | 前端 API 全部 401        | 浏览器 cookie、`JWT_SECRET` | 看登录接口是否成功写入 `access_token` cookie                                                   |
 | 前端请求不到后端         | Vite 代理、后端端口         | 核对 `apps/vite-frontend/vite.config.ts` 的 `/api/v1` 代理目标是否仍为 `http://localhost:4000` |
-| 自定义 CORS 来源不生效   | 配置漂移                    | 当前实现存在 `FRONTEND_HOST` 与 `process.env.HOST` 不一致的问题                                |
+| 自定义 CORS 来源不生效   | 根级环境变量                | 确认根级 `.env.development` 或 `.env.production` 中的 `FRONTEND_HOST` 是否与前端实际地址一致   |
 | 点击 Footer 链接进入 404 | 路由本身缺失                | 当前只实现了首页、登录、注册、错误页和 404 页                                                  |
 
 ## 数据库操作
