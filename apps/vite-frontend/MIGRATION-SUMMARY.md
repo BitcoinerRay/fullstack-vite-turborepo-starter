@@ -1,10 +1,12 @@
 # PrimeReact → Shadcn/ui Migration Summary
 
+> Historical note: this file records the February 13, 2026 migration work. Treat it as archive context, not as the current source of truth for the Vite frontend.
+
 ## Migration Completed: February 13, 2026
 
 ### Overview
 
-Successfully migrated the frontend from PrimeReact to Shadcn/ui (Vite + React) while maintaining all existing APIs and functionality.
+This migration successfully moved the frontend from PrimeReact to Shadcn/ui (Vite + React) while preserving the business-facing APIs that existed at the time.
 
 ## Components Replaced
 
@@ -156,11 +158,11 @@ npm run build
 2. ✅ Minimal component set: Only installed what's needed
 3. ✅ Options mapping: Documented Toast field conversions
 4. ✅ Concurrent handling: ConfirmDialog prevents overlaps
-5. ✅ Client components: Properly marked with `'use client'`
+5. ✅ Temporary `'use client'` markers were added during migration review and later removed from the Vite codebase
 6. ✅ Tailwind v4: Fixed CSS variables syntax
 7. ✅ Portal mounting: Single `<Toaster />` and `<ConfirmProvider />`
 
-## Remaining Tasks
+## Historical Follow-up Items
 
 ### For Product Team
 

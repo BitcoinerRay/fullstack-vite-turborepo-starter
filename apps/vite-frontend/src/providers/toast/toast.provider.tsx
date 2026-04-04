@@ -1,5 +1,3 @@
-'use client';
-
 import {createContext, type JSX, type ReactNode, useCallback} from 'react';
 import {toast} from 'sonner';
 import {Toaster} from '@/components/ui/sonner.tsx';
