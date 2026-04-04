@@ -16,7 +16,23 @@
     "customError": "The input provided is invalid. Please review and correct it."
   },
   "components": {
-    "header": {},
+    "header": {
+      "brand": "Fullstack Auth Starter",
+      "tagline": "Vite, NestJS and Turbo in one workspace",
+      "navigationLabel": "Primary navigation",
+      "links": {
+        "dashboard": "Dashboard",
+        "about": "About",
+        "contact": "Contact",
+        "privacy": "Privacy"
+      },
+      "auth": {
+        "login": "Sign In",
+        "register": "Create Account",
+        "logout": "Sign Out"
+      },
+      "signedInAs": "Signed in as {{email}}"
+    },
     "footer": {
       "groups": {
         "company": "Company",
@@ -49,6 +65,141 @@
   "pages": {
     "home": {
       "title": "Welcome to Vite - NestJS - Turbo Boilerplate"
+    },
+    "about": {
+      "eyebrow": "Project overview",
+      "title": "A starter stack for full-stack authentication flows",
+      "description": "This workspace combines a Vite React frontend, a NestJS backend, shared DTO contracts, and Prisma-backed persistence so teams can start from a coherent baseline instead of wiring the same pieces together again.",
+      "sections": [
+        {
+          "title": "What is already included",
+          "body": [
+            "The frontend talks to the backend through a shared DTO package, which keeps request and response shapes aligned across workspaces.",
+            "The backend ships with authentication, Swagger, Prisma integration, and a health endpoint, giving you the core plumbing needed to stand up a product quickly."
+          ]
+        },
+        {
+          "title": "How teams usually extend it",
+          "body": [
+            "Treat the apps directory as your delivery surface and the packages directory as the reusable contract and data layer.",
+            "Once the infrastructure is running, you can add feature modules, expand the Prisma schema, and evolve shared DTOs without duplicating validation logic between frontend and backend."
+          ]
+        }
+      ],
+      "cta": {
+        "title": "Use the starter as a baseline, not a finished product",
+        "body": "Create an account to test the auth flow, then replace this copy and the legal pages with your own product content before shipping.",
+        "primary": "Create an account",
+        "secondary": "Sign in"
+      }
+    },
+    "contact": {
+      "eyebrow": "Contact",
+      "title": "Route support and ownership through maintainers you can actually reach",
+      "description": "This starter does not embed a production support channel. The safest default is to direct contributors to your repository issue tracker and replace this page with your real support contact before launch.",
+      "sections": [
+        {
+          "title": "Recommended channel today",
+          "body": [
+            "Use the repository issue tracker for bug reports, integration questions, and setup problems while the project is still in template form.",
+            "If you fork this starter for a real product, update this page with a support email, an SLA expectation, and a clear escalation path for urgent incidents."
+          ]
+        },
+        {
+          "title": "What to document before production",
+          "body": [
+            "List who owns billing, privacy, and technical support so users do not have to guess where to ask.",
+            "If the product serves different regions, document language support and business hours here instead of hiding them inside a README."
+          ]
+        }
+      ],
+      "cta": {
+        "title": "Want to test the app instead of the template?",
+        "body": "Create a local account and walk through the auth flow while you shape your own support process around the product.",
+        "primary": "Create an account",
+        "secondary": "Sign in"
+      }
+    },
+    "imprint": {
+      "eyebrow": "Imprint",
+      "title": "This page is a starter placeholder for company disclosure",
+      "description": "An imprint or company disclosure page is often mandatory in some regions, but the required content depends on the operator, jurisdiction, and business model. The template can give you a route, but it cannot supply legally correct business details for you.",
+      "sections": [
+        {
+          "title": "What is missing by design",
+          "body": [
+            "No company name, registered address, legal representative, or registration data is shipped with this repository because those values must come from the organization operating the product.",
+            "If you deploy this starter publicly, replace this placeholder with verified company information before you invite users to rely on it."
+          ]
+        },
+        {
+          "title": "Suggested next step",
+          "body": [
+            "Ask legal or operations to provide the exact disclosure text required for the countries where you operate.",
+            "Keep the final copy versioned in the repository so changes to business ownership and addresses are reviewed like any other production change."
+          ]
+        }
+      ],
+      "cta": {
+        "title": "Keep the route, replace the details",
+        "body": "The point of this page is to stop sending users into a dead link while making the follow-up work obvious.",
+        "primary": "Create an account",
+        "secondary": "Sign in"
+      }
+    },
+    "privacy": {
+      "eyebrow": "Privacy",
+      "title": "Privacy content needs a real policy before deployment",
+      "description": "The codebase demonstrates cookies, authentication, and persistence, which means any real deployment needs a privacy policy that reflects actual data handling. This placeholder keeps navigation honest while making the gap explicit.",
+      "sections": [
+        {
+          "title": "What the starter currently implies",
+          "body": [
+            "Authentication uses cookies and backend persistence, so users will reasonably expect clear disclosure about what data is stored, how long it is retained, and who can access it.",
+            "Because deployment details vary by team, this repository does not claim a retention policy, subprocessors, or regional compliance posture that may not be true for your fork."
+          ]
+        },
+        {
+          "title": "Before you go live",
+          "body": [
+            "Document your data categories, legal basis, retention windows, and contact method for privacy requests.",
+            "Review frontend analytics, session storage, and backend logging as part of the same pass so the written policy matches the software."
+          ]
+        }
+      ],
+      "cta": {
+        "title": "Exercise the flow, then add your policy",
+        "body": "You can use the auth starter now, but the legal copy still needs owner-supplied content before a public release.",
+        "primary": "Create an account",
+        "secondary": "Sign in"
+      }
+    },
+    "terms": {
+      "eyebrow": "Terms",
+      "title": "Terms of service should describe your actual product obligations",
+      "description": "A template can reserve the route and give teams a place to land, but acceptable use rules, warranties, billing terms, and account enforcement policies depend on the service you run.",
+      "sections": [
+        {
+          "title": "Why this is still useful",
+          "body": [
+            "Users no longer hit a dead link when they look for your terms, which is better than hiding the absence of legal content behind broken navigation.",
+            "The copy here makes it clear that the route exists for product completeness, not because the repository ships a production-ready legal agreement."
+          ]
+        },
+        {
+          "title": "What to replace before release",
+          "body": [
+            "Define account rules, service limitations, ownership of user content, and how termination works.",
+            "If you charge money, add billing, refunds, and renewal language that matches the systems you actually operate."
+          ]
+        }
+      ],
+      "cta": {
+        "title": "Use the app flow while the policy work catches up",
+        "body": "You can still validate routing and authentication now, then swap in approved legal copy later as part of launch readiness.",
+        "primary": "Create an account",
+        "secondary": "Sign in"
+      }
     }
   },
   "auth": {
