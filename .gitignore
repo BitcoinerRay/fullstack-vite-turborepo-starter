@@ -4,7 +4,7 @@ node_modules
 # Testing
 coverage
 
-# Environment (use .env.example as template)
+# Environment
 .env
 
 # Misc
