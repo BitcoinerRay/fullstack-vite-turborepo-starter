@@ -1,6 +1,7 @@
 import {Injectable, NotFoundException, ConflictException} from '@nestjs/common';
 import {PrismaService, type User} from '@next-nest-turbo-auth-boilerplate/db';
 import {UserDto, UserRole} from '@next-nest-turbo-auth-boilerplate/shared';
+import {RedisService} from '../redis/redis.service';
 
 const safeUserSelect = {
   id: true,
@@ -12,17 +13,57 @@ const safeUserSelect = {
 
 type SafeUser = Omit<User, 'passwordHash'>;
 
+const userCacheTtlSeconds = 60;
+const userCacheKey = (id: string): string => `user:id:${id}`;
+
+type CachedUser = {
+  id: string;
+  email: string;
+  role: UserRole;
+  createdAt: string;
+  updatedAt: string;
+};
+
+function serializeForCache(user: SafeUser): CachedUser {
+  return {
+    id: user.id,
+    email: user.email,
+    role: user.role as UserRole,
+    createdAt: user.createdAt.toISOString(),
+    updatedAt: user.updatedAt.toISOString(),
+  };
+}
+
+function deserializeFromCache(cached: CachedUser): SafeUser {
+  return {
+    id: cached.id,
+    email: cached.email,
+    role: cached.role,
+    createdAt: new Date(cached.createdAt),
+    updatedAt: new Date(cached.updatedAt),
+  };
+}
+
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redis: RedisService,
+  ) {}
 
   async findById(id: string): Promise<SafeUser> {
+    const cached = await this.redis.getJson<CachedUser>(userCacheKey(id));
+    if (cached) {
+      return deserializeFromCache(cached);
+    }
+
     const user = await this.prisma.user.findUnique({where: {id}, select: safeUserSelect});
 
     if (!user) {
       throw new NotFoundException(`User not found`);
     }
 
+    await this.redis.setJson(userCacheKey(id), serializeForCache(user), userCacheTtlSeconds);
     return user;
   }
 
@@ -36,10 +77,12 @@ export class UsersService {
 
   async create(email: string, passwordHash: string): Promise<SafeUser> {
     try {
-      return await this.prisma.user.create({
+      const user = await this.prisma.user.create({
         data: {email, passwordHash, role: UserRole.USER},
         select: safeUserSelect,
       });
+      await this.redis.setJson(userCacheKey(user.id), serializeForCache(user), userCacheTtlSeconds);
+      return user;
     } catch (error) {
       if ((error as {code?: string}).code === 'P2002') {
         throw new ConflictException('Email already in use');
@@ -47,6 +90,10 @@ export class UsersService {
 
       throw error;
     }
+  }
+
+  async invalidateCache(id: string): Promise<void> {
+    await this.redis.del(userCacheKey(id));
   }
 
   toDto(user: SafeUser): UserDto {

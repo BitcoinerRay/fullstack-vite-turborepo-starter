@@ -71,6 +71,57 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     return this.publisher.ping();
   }
 
+  /**
+   * Get a JSON-serialized value from the cache. Returns `undefined` on miss
+   * or when the underlying client is not yet ready, so callers can fall back
+   * to the source of truth without crashing the request.
+   */
+  async getJson<T>(key: string): Promise<T | undefined> {
+    if (!this.publisher) {
+      return undefined;
+    }
+
+    try {
+      const raw = await this.publisher.get(key);
+      if (raw === null) {
+        return undefined;
+      }
+
+      return JSON.parse(raw) as T;
+    } catch (error) {
+      this.logger.warn(`Redis GET failed for ${key}: ${(error as Error).message}`);
+      return undefined;
+    }
+  }
+
+  /**
+   * Cache a JSON-serializable value with a TTL (in seconds). Failures are
+   * swallowed so a flaky cache never breaks the underlying request.
+   */
+  async setJson<T>(key: string, value: T, ttlSeconds: number): Promise<void> {
+    if (!this.publisher) {
+      return;
+    }
+
+    try {
+      await this.publisher.set(key, JSON.stringify(value), 'EX', ttlSeconds);
+    } catch (error) {
+      this.logger.warn(`Redis SET failed for ${key}: ${(error as Error).message}`);
+    }
+  }
+
+  async del(...keys: string[]): Promise<void> {
+    if (!this.publisher || keys.length === 0) {
+      return;
+    }
+
+    try {
+      await this.publisher.del(...keys);
+    } catch (error) {
+      this.logger.warn(`Redis DEL failed: ${(error as Error).message}`);
+    }
+  }
+
   async publish<T>(channel: string, message: T): Promise<void> {
     const serialized = JSON.stringify(message);
     if (!this.publisher) {
