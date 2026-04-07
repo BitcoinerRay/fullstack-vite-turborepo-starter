@@ -3,12 +3,13 @@ import {ConfigService} from '@nestjs/config';
 import {PassportStrategy} from '@nestjs/passport';
 import {ExtractJwt, Strategy} from 'passport-jwt';
 import {type Request} from 'express';
+import {type UserRole} from '@next-nest-turbo-auth-boilerplate/shared';
 import {ConfigKey} from '../../config/config-key.enum';
 
 export type JwtPayload = {
   sub: string;
   email: string;
-  role: string;
+  role: UserRole;
 };
 
 const extractJwtFromCookie = (req: Request): string | undefined =>

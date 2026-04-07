@@ -30,7 +30,7 @@ const userDto = {
 const authPayload: JwtPayload = {
   sub: user.id,
   email: user.email,
-  role: user.role,
+  role: user.role as UserRole,
 };
 
 describe('Auth flows (e2e)', () => {

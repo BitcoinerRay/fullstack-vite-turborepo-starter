@@ -1,5 +1,6 @@
 import {Body, Controller, HttpCode, HttpStatus, Post, Res} from '@nestjs/common';
 import {ApiTags, ApiOperation, ApiResponse} from '@nestjs/swagger';
+import {Throttle} from '@nestjs/throttler';
 import {type Response} from 'express';
 import {LoginDto, RegisterDto, AuthResponseDto} from '@next-nest-turbo-auth-boilerplate/shared';
 import {AuthService} from './auth.service';
@@ -13,6 +14,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @Throttle({'auth-throttler': {limit: 3, ttl: 60 * 1000}})
   @ApiOperation({summary: 'Register a new user'})
   @ApiResponse({status: 201, type: AuthResponseDto})
   @ApiResponse({status: 409, description: 'Email already in use'})
@@ -24,6 +26,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @Throttle({'auth-throttler': {limit: 5, ttl: 60 * 1000}})
   @ApiOperation({summary: 'Login with email and password'})
   @ApiResponse({status: 200, type: AuthResponseDto})
   @ApiResponse({status: 401, description: 'Invalid credentials'})

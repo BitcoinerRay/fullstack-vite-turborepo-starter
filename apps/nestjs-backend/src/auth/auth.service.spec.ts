@@ -1,8 +1,10 @@
 import {UnauthorizedException} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
 import {JwtService} from '@nestjs/jwt';
 import {type User} from '@next-nest-turbo-auth-boilerplate/db';
 import {RegisterDto, LoginDto, UserRole} from '@next-nest-turbo-auth-boilerplate/shared';
 import {compare, hash} from 'bcrypt';
+import {ConfigKey} from '../config/config-key.enum';
 import {UsersService} from '../users/users.service';
 import {AuthService} from './auth.service';
 
@@ -34,14 +36,17 @@ const userDto = {
 describe('AuthService', () => {
   const usersService = {
     create: jest.fn(),
-    findByEmail: jest.fn(),
+    findByEmailWithPassword: jest.fn(),
     toDto: jest.fn(() => userDto),
   } as unknown as UsersService;
   const jwtService = {
     sign: jest.fn(() => 'signed-token'),
   } as unknown as JwtService;
+  const configService = {
+    get: jest.fn((key: ConfigKey, fallback?: unknown) => (key === ConfigKey.BCRYPT_SALT_ROUNDS ? 12 : fallback)),
+  } as unknown as ConfigService;
 
-  const service = new AuthService(usersService, jwtService);
+  const service = new AuthService(usersService, jwtService, configService);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -73,7 +78,7 @@ describe('AuthService', () => {
       password: 'password123',
     };
 
-    jest.mocked(usersService.findByEmail).mockResolvedValue(user);
+    jest.mocked(usersService.findByEmailWithPassword).mockResolvedValue(user);
     compareMock.mockImplementation(async () => true);
 
     await expect(service.login(dto)).resolves.toEqual({
@@ -92,7 +97,7 @@ describe('AuthService', () => {
       password: 'wrong-password',
     };
 
-    jest.mocked(usersService.findByEmail).mockResolvedValue(user);
+    jest.mocked(usersService.findByEmailWithPassword).mockResolvedValue(user);
     compareMock.mockImplementation(async () => false);
 
     await expect(service.login(dto)).rejects.toThrow(new UnauthorizedException('Invalid credentials'));

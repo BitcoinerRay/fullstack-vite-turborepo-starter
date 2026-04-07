@@ -30,6 +30,11 @@ import {UsersModule} from './users/users.module';
           ttl: 60 * 1000,
           limit: 60,
         },
+        {
+          name: 'auth-throttler',
+          ttl: 60 * 1000,
+          limit: 5,
+        },
       ],
     }),
     CommonModule,
