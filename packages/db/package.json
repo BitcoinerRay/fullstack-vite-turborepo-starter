@@ -6,6 +6,7 @@
     "build": "prisma generate && tsc",
     "lint": "npm run db:generate && xo",
     "lint:fix": "npm run db:generate && xo --fix",
+    "type-check": "npm run db:generate && tsc --noEmit -p tsconfig.json",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:pull": "prisma db pull",

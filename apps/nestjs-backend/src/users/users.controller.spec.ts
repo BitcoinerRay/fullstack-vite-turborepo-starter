@@ -37,7 +37,7 @@ describe('UsersController', () => {
       controller.getMe({
         sub: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role as UserRole,
       }),
     ).resolves.toEqual(userDto);
 

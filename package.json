@@ -19,9 +19,12 @@
     "start:prod": "turbo run start:prod",
     "lint": "turbo run lint --",
     "lint:fix": "turbo run lint:fix --",
+    "type-check": "turbo run type-check",
     "test:unit": "turbo run test:unit",
     "test:e2e": "turbo run test:e2e",
     "test:unit:cov": "turbo run test:unit:cov",
+    "test:all": "turbo run test:unit test:e2e",
+    "ci": "turbo run lint type-check test:unit:cov build",
     "format": "prettier --write \"**/*.{json,md,css,html,yml,yaml}\"",
     "init": "node scripts/init.js",
     "copilot:sync": "node scripts/copilot-sync.js",
@@ -36,7 +39,8 @@
     "lint-staged": "16.2.7",
     "prettier": "3.8.1",
     "ts-node": "10.9.2",
-    "turbo": "2.8.7"
+    "turbo": "2.8.7",
+    "vitest": "3.2.4"
   },
   "overrides": {
     "@nestjs/common": "11.1.18",

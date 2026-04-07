@@ -1,6 +1,7 @@
 import {type JSX} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
+import {useShallow} from 'zustand/react/shallow';
 import {Button} from '@/components/ui/button.tsx';
 import {useLogout} from '@/hooks/use-auth/use-auth.hook';
 import {Link, getLocalePath} from '@/i18n/navigation.ts';
@@ -12,8 +13,9 @@ export function Header(): JSX.Element {
   const {locale} = useParams<{locale: string}>();
   const location = useLocation();
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const {user, isAuthenticated} = useAuthStore(
+    useShallow((state) => ({user: state.user, isAuthenticated: state.isAuthenticated})),
+  );
   const {logout, isPending} = useLogout();
   const homePath = getLocalePath(locale, '/');
   const navigationItems = [

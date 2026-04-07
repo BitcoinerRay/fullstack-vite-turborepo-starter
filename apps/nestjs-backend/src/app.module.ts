@@ -8,6 +8,7 @@ import {CommonModule} from './common/common.module';
 import appConfig from './config/app.config';
 import validationSchema from './config/validation.schema';
 import {HealthModule} from './health/health.module';
+import {RedisModule} from './redis/redis.module';
 import {AuthModule} from './auth/auth.module';
 import {UsersModule} from './users/users.module';
 
@@ -23,12 +24,18 @@ import {UsersModule} from './users/users.module';
       load: [appConfig],
     }),
     PrismaModule,
+    RedisModule,
     ThrottlerModule.forRoot({
       throttlers: [
         {
           name: 'default-throttler',
           ttl: 60 * 1000,
           limit: 60,
+        },
+        {
+          name: 'auth-throttler',
+          ttl: 60 * 1000,
+          limit: 5,
         },
       ],
     }),

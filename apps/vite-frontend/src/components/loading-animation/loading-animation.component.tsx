@@ -2,11 +2,11 @@ import {type JSX} from 'react';
 import {Loader2} from 'lucide-react';
 import {useLoadingStore} from '@/store/loading/loading.store';
 
-export function LoadingAnimation(): JSX.Element | undefined {
-  const {isLoading} = useLoadingStore();
+export function LoadingAnimation(): JSX.Element | null {
+  const isLoading = useLoadingStore((state) => state.isLoading);
 
   if (!isLoading) {
-    return undefined;
+    return null;
   }
 
   return (

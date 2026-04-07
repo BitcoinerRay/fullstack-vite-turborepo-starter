@@ -6,5 +6,8 @@
   "testRegex": ".*\\.spec\\.ts$",
   "transform": {
     "^.+\\.ts$": "ts-jest"
-  }
+  },
+  "collectCoverageFrom": ["src/**/*.ts", "!src/main.ts", "!src/**/*.module.ts", "!src/**/*.dto.ts", "!src/**/index.ts"],
+  "coverageDirectory": "coverage",
+  "coverageReporters": ["text-summary", "lcov", "json-summary"]
 }

@@ -6,6 +6,8 @@ coverage
 
 # Environment
 .env
+.env.production
+.env.*.local
 
 # Misc
 .DS_Store
