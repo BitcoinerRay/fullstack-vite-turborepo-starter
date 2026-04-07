@@ -8,10 +8,18 @@
     },
     "build": {
       "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig*.json", "package.json", "vite.config.ts", "nest-cli.json"],
       "outputs": ["dist/**"]
     },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig*.json", "package.json"],
+      "outputs": []
+    },
     "lint": {
-      "cache": false
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig*.json", "xo.config.*", ".eslintrc*", "package.json"],
+      "outputs": []
     },
     "lint:fix": {
       "cache": false
@@ -33,14 +41,25 @@
     },
     "test:unit": {
       "dependsOn": ["^build"],
+      "inputs": ["src/**", "test/**", "tsconfig*.json", "package.json", "jest*.json"],
       "outputs": []
     },
     "test:unit:cov": {
       "dependsOn": ["^build"],
+      "inputs": ["src/**", "test/**", "tsconfig*.json", "package.json", "jest*.json"],
       "outputs": ["coverage/**"]
     },
     "test:e2e": {
       "dependsOn": ["^build"],
+      "inputs": [
+        "src/**",
+        "test/**",
+        "tests/**",
+        "tsconfig*.json",
+        "package.json",
+        "playwright.config.*",
+        "jest*.json"
+      ],
       "outputs": []
     }
   }

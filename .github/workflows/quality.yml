@@ -52,6 +52,28 @@ jobs:
       - name: Run npm audit
         run: npm audit --omit=dev --audit-level=moderate
 
+  # -------- Type check --------
+  type-check:
+    name: Type Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.13.1
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run type check
+        run: npm run type-check
+
   # -------- Tests --------
   tests:
     name: Tests
@@ -71,14 +93,33 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
       - name: Install Playwright Chromium
         run: npx playwright install chromium
 
-      - name: Run unit tests
-        run: npm run test:unit
+      - name: Run unit tests with coverage
+        run: npm run test:unit:cov
 
       - name: Run e2e tests
         run: npm run test:e2e
+
+      - name: Upload coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            apps/*/coverage
+            packages/*/coverage
+          if-no-files-found: ignore
+          retention-days: 14
 
   # -------- TruffleHog --------
   trufflehog:
