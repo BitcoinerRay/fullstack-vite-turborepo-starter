@@ -39,7 +39,8 @@
     "lint-staged": "16.2.7",
     "prettier": "3.8.1",
     "ts-node": "10.9.2",
-    "turbo": "2.8.7"
+    "turbo": "2.8.7",
+    "vitest": "3.2.4"
   },
   "overrides": {
     "@nestjs/common": "11.1.18",
