@@ -42,7 +42,11 @@ const toastWarning = vi.mocked(toast.warning);
 function buildResponseError(
   status: number,
   message?: string,
-  requestConfig: Partial<InternalAxiosRequestConfig> & {skipAuthRedirect?: boolean} = {},
+  requestConfig: Partial<InternalAxiosRequestConfig> & {
+    skipAuthRedirect?: boolean;
+    skipAuthRefresh?: boolean;
+    retriedAfterRefresh?: boolean;
+  } = {},
 ): AxiosError {
   const config: InternalAxiosRequestConfig = {
     headers: new AxiosHeaders(),
@@ -96,10 +100,10 @@ describe('axios interceptors', () => {
     expect(useLoadingStore.getState().pendingRequests).toBe(0);
   });
 
-  it('clears auth and redirects to the localized login on 401', async () => {
+  it('clears auth and redirects to the localized login when retried request still 401s', async () => {
     useAuthStore.getState().setUser(sampleUser);
     const {rejected} = getResponseHandlers();
-    const error = buildResponseError(401, 'unauthorized');
+    const error = buildResponseError(401, 'unauthorized', {retriedAfterRefresh: true});
 
     await expect(rejected(error)).rejects.toBe(error);
 
@@ -109,7 +113,7 @@ describe('axios interceptors', () => {
 
   it('does not redirect on 401 when skipAuthRedirect is set', async () => {
     const {rejected} = getResponseHandlers();
-    const error = buildResponseError(401, 'unauthorized', {skipAuthRedirect: true});
+    const error = buildResponseError(401, 'unauthorized', {skipAuthRedirect: true, skipAuthRefresh: true});
 
     await expect(rejected(error)).rejects.toBe(error);
     expect(getWindowHref()).toBe('');
@@ -118,7 +122,7 @@ describe('axios interceptors', () => {
   it('does not redirect on 401 when already on the login page', async () => {
     setWindowPathname('/en/login');
     const {rejected} = getResponseHandlers();
-    const error = buildResponseError(401, 'unauthorized');
+    const error = buildResponseError(401, 'unauthorized', {retriedAfterRefresh: true});
 
     await expect(rejected(error)).rejects.toBe(error);
     expect(getWindowHref()).toBe('');
@@ -146,5 +150,43 @@ describe('axios interceptors', () => {
 
     await expect(rejected(error)).rejects.toBe(error);
     expect(toastError).toHaveBeenCalledWith('A server error occurred. Please try again later.');
+  });
+
+  it('attempts a refresh and retries the original request on a fresh 401', async () => {
+    const postSpy = vi.spyOn(axiosInstance, 'post').mockResolvedValue({data: {}} as AxiosResponse);
+    const retryResponse: AxiosResponse = {status: 200, statusText: 'OK', headers: {}, config: {headers: new AxiosHeaders()}, data: {ok: true}};
+    const requestSpy = vi.spyOn(axiosInstance, 'request').mockResolvedValue(retryResponse);
+
+    const {rejected} = getResponseHandlers();
+    const error = buildResponseError(401, 'unauthorized', {url: '/users/me'});
+
+    await expect(rejected(error)).resolves.toBe(retryResponse);
+
+    expect(postSpy).toHaveBeenCalledWith('/auth/refresh', undefined, expect.objectContaining({skipAuthRefresh: true, skipAuthRedirect: true}));
+    expect(requestSpy).toHaveBeenCalledWith(expect.objectContaining({url: '/users/me', retriedAfterRefresh: true}));
+    expect(useAuthStore.getState().isAuthenticated).toBe(false);
+    expect(getWindowHref()).toBe('');
+  });
+
+  it('falls through to clear-auth and redirect when refresh fails', async () => {
+    useAuthStore.getState().setUser(sampleUser);
+    vi.spyOn(axiosInstance, 'post').mockRejectedValue(new Error('refresh failed'));
+
+    const {rejected} = getResponseHandlers();
+    const error = buildResponseError(401, 'unauthorized', {url: '/users/me'});
+
+    await expect(rejected(error)).rejects.toBe(error);
+
+    expect(useAuthStore.getState().isAuthenticated).toBe(false);
+    expect(getWindowHref()).toBe('/en/login');
+  });
+
+  it('does not attempt to refresh when the failing request is itself /auth/refresh', async () => {
+    const postSpy = vi.spyOn(axiosInstance, 'post');
+    const {rejected} = getResponseHandlers();
+    const error = buildResponseError(401, 'unauthorized', {url: '/auth/refresh'});
+
+    await expect(rejected(error)).rejects.toBe(error);
+    expect(postSpy).not.toHaveBeenCalled();
   });
 });

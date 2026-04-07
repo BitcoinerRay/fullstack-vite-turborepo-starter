@@ -22,6 +22,7 @@ const appConfig = (): Record<ConfigKey, unknown> => ({
 
   [ConfigKey.JWT_SECRET]: process.env.JWT_SECRET,
   [ConfigKey.JWT_EXPIRES_IN]: process.env.JWT_EXPIRES_IN ?? '15m',
+  [ConfigKey.REFRESH_TOKEN_SECRET]: process.env.REFRESH_TOKEN_SECRET,
   [ConfigKey.REFRESH_TOKEN_EXPIRES_IN]: process.env.REFRESH_TOKEN_EXPIRES_IN ?? '7d',
   [ConfigKey.BCRYPT_SALT_ROUNDS]: Number(process.env.BCRYPT_SALT_ROUNDS ?? 12),
 });

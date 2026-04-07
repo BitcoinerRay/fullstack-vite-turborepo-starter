@@ -23,6 +23,7 @@ const validationSchemaMap: Record<ConfigKey, Joi.Schema> = {
 
   [ConfigKey.JWT_SECRET]: Joi.string().min(32).required(),
   [ConfigKey.JWT_EXPIRES_IN]: Joi.string().default('15m'),
+  [ConfigKey.REFRESH_TOKEN_SECRET]: Joi.string().min(32).required(),
   [ConfigKey.REFRESH_TOKEN_EXPIRES_IN]: Joi.string().default('7d'),
   [ConfigKey.BCRYPT_SALT_ROUNDS]: Joi.number().integer().min(4).max(15).default(12),
 };

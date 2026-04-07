@@ -4,8 +4,10 @@ import {getLocale, getLocalePath} from '@/i18n/navigation.ts';
 import {useAuthStore} from '@/store/auth/auth.store';
 import {useLoadingStore} from '@/store/loading/loading.store';
 
-type RequestConfigWithAuthRedirect = {
+type RequestConfigWithMeta = InternalAxiosRequestConfig & {
   skipAuthRedirect?: boolean;
+  skipAuthRefresh?: boolean;
+  retriedAfterRefresh?: boolean;
 };
 
 type ApiErrorBody = {
@@ -43,6 +45,51 @@ function isAuthPagePath(pathname: string): boolean {
   return /\/(login|register)\/?$/u.test(pathname);
 }
 
+function isRefreshEndpoint(url: string | undefined): boolean {
+  return url === undefined ? false : /\/auth\/refresh\/?$/u.test(url);
+}
+
+// Single-flight refresh: concurrent 401s share one POST /auth/refresh, then
+// each retries its original request once. Retried requests are tagged so a
+// second 401 falls through to the normal clear-auth + redirect path.
+let refreshPromise: Promise<void> | undefined;
+
+async function performTokenRefresh(): Promise<void> {
+  if (refreshPromise === undefined) {
+    refreshPromise = (async () => {
+      try {
+        await axiosInstance.post('/auth/refresh', undefined, {
+          skipAuthRedirect: true,
+          skipAuthRefresh: true,
+        } as RequestConfigWithMeta);
+      } finally {
+        refreshPromise = undefined;
+      }
+    })();
+  }
+
+  return refreshPromise;
+}
+
+function redirectToLogin(): void {
+  const pathname = globalThis.window?.location.pathname ?? '';
+  const localeMatch = /^\/([^/]+)/u.exec(pathname);
+  const locale = getLocale(localeMatch?.[1]);
+  if (!isAuthPagePath(pathname)) {
+    globalThis.window.location.href = getLocalePath(locale, '/login');
+  }
+}
+
+function reportNonAuthError(status: number, message: string | undefined): void {
+  if (status === 403) {
+    toast.error(String(message ?? 'Access denied'));
+  } else if (status === 429) {
+    toast.warning('Too many requests. Please wait a moment.');
+  } else if (status >= 500) {
+    toast.error('A server error occurred. Please try again later.');
+  }
+}
+
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     useLoadingStore.getState().increment();
@@ -54,6 +101,16 @@ axiosInstance.interceptors.request.use(
   },
 );
 
+function shouldAttemptRefresh(status: number | undefined, requestConfig: RequestConfigWithMeta | undefined): boolean {
+  return (
+    status === 401 &&
+    requestConfig !== undefined &&
+    !requestConfig.skipAuthRefresh &&
+    !requestConfig.retriedAfterRefresh &&
+    !isRefreshEndpoint(requestConfig.url)
+  );
+}
+
 axiosInstance.interceptors.response.use(
   async (response: AxiosResponse) => {
     useLoadingStore.getState().decrement();
@@ -63,28 +120,28 @@ axiosInstance.interceptors.response.use(
     useLoadingStore.getState().decrement();
 
     const status = error.response?.status;
-    const message = error.response?.data?.message;
+    const requestConfig = error.config as RequestConfigWithMeta | undefined;
+
+    if (shouldAttemptRefresh(status, requestConfig)) {
+      try {
+        await performTokenRefresh();
+        const retryConfig: RequestConfigWithMeta = {...requestConfig!, retriedAfterRefresh: true};
+        return await axiosInstance.request(retryConfig);
+      } catch {
+        // Fall through to the regular 401 handling below.
+      }
+    }
 
     if (status === 401) {
       useAuthStore.getState().clearAuth();
-      const pathname = globalThis.window?.location.pathname ?? '';
-      const localeMatch = /^\/([^/]+)/u.exec(pathname);
-      const locale = getLocale(localeMatch?.[1]);
-      const requestConfig = error.config as RequestConfigWithAuthRedirect | undefined;
-      if (!requestConfig?.skipAuthRedirect && !isAuthPagePath(pathname)) {
-        globalThis.window.location.href = getLocalePath(locale, '/login');
+      if (!requestConfig?.skipAuthRedirect) {
+        redirectToLogin();
       }
 
       throw error;
     }
 
-    if (status === 403) {
-      toast.error(String(message ?? 'Access denied'));
-    } else if (status === 429) {
-      toast.warning('Too many requests. Please wait a moment.');
-    } else if (status !== undefined && status >= 500) {
-      toast.error('A server error occurred. Please try again later.');
-    }
+    reportNonAuthError(status ?? 0, error.response?.data?.message);
 
     throw error;
   },
