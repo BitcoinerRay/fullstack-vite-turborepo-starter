@@ -21,7 +21,35 @@ async function bootstrap(): Promise<void> {
   const enableSwagger = configService.get<boolean>(ConfigKey.ENABLE_SWAGGER) ?? true;
   const port = configService.get<number>(ConfigKey.PORT) ?? 4000;
 
-  app.use(helmet());
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  // The API only ever returns JSON (plus the Swagger HTML page when enabled),
+  // so the CSP can be very restrictive. Swagger is allowed via 'self' + inline
+  // styles only when explicitly enabled.
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'default-src': ["'none'"],
+          'base-uri': ["'self'"],
+          'form-action': ["'self'"],
+          'frame-ancestors': ["'none'"],
+          'img-src': ["'self'", 'data:'],
+          'script-src': enableSwagger ? ["'self'", "'unsafe-inline'"] : ["'none'"],
+          'style-src': enableSwagger ? ["'self'", "'unsafe-inline'"] : ["'none'"],
+          'connect-src': ["'self'", frontendHost],
+          'object-src': ["'none'"],
+        },
+      },
+      crossOriginEmbedderPolicy: false,
+      crossOriginResourcePolicy: {policy: 'same-site'},
+      referrerPolicy: {policy: 'no-referrer'},
+      hsts: isProduction
+        ? {maxAge: 31_536_000, includeSubDomains: true, preload: false}
+        : false,
+    }),
+  );
   app.use(compression());
 
   app.enableCors({
