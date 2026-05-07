@@ -16,7 +16,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -28,6 +28,13 @@ services:
     ports:
       - '${REDIS_PORT:-6379}:6379'
     restart: always
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - redis-cli -a "${REDIS_PASSWORD:-redis_pass}" ping | grep -q PONG
+      interval: 5s
+      timeout: 5s
+      retries: 5
     # Uncomment below for persistence (queue use cases):
     # volumes:
     #   - redis_data:/data
