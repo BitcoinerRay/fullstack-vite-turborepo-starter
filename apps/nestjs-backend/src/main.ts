@@ -98,10 +98,8 @@ async function bootstrap(): Promise<void> {
       .addCookieAuth('access_token', {type: 'apiKey', in: 'cookie', name: 'access_token'})
       .addBearerAuth({type: 'http', scheme: 'bearer', bearerFormat: 'JWT'})
       .build();
-    // npm workspaces can install Swagger and Nest core types at different paths.
-    const swaggerApp = app as Parameters<typeof SwaggerModule.createDocument>[0];
-    const documentFactory = (): OpenAPIObject => SwaggerModule.createDocument(swaggerApp, swaggerConfig);
-    SwaggerModule.setup('api/docs', swaggerApp, documentFactory);
+    const documentFactory = (): OpenAPIObject => SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api/docs', app, documentFactory);
   }
 
   const httpServer = app.getHttpServer() as {
