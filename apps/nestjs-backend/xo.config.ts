@@ -29,6 +29,14 @@ const xoConfig = [
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/no-var-requires': 'error',
       '@typescript-eslint/no-unused-vars': 'error',
+      // Prisma's $queryRaw / generated client returns and class-validator
+      // decorator metadata both register as `any` to typescript-eslint, so
+      // these rules produce noise we cannot remediate at the call site.
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
 
       // Nest.js specific rules
       '@typescript-eslint/consistent-type-imports': 'off', // Open API doc fails to recognize type import of DTOs correctly
@@ -36,9 +44,6 @@ const xoConfig = [
     },
   },
 
-  // File-specific overrides
-  // Note: Entity file overrides removed as Prisma uses a different approach
-  // Prisma models are defined in schema.prisma, not TypeScript entity files
 ];
 
 export default xoConfig;

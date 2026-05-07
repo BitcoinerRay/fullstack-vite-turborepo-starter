@@ -10,11 +10,18 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {useRegister} from '@/hooks/use-auth/use-auth.hook';
 import {useToast} from '@/hooks/use-toast/use-toast.hook';
+import {resolveAuthErrorMessage} from '@/lib/auth-error';
+
+// Mirror of packages/shared/src/dtos/auth/register.dto.ts:passwordPattern.
+// Inlined because Vite/Rollup cannot statically resolve named const exports
+// out of the shared package's CJS dist; backend DTO remains source of truth
+// (it returns 400 on mismatch — this just keeps the UX feedback aligned).
+const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d).{8,64}$/u;
 
 const registerSchema = z
   .object({
     email: z.email(),
-    password: z.string().min(8).max(64),
+    password: z.string().min(8).max(64).regex(passwordPattern, {message: 'auth.passwordTooWeak'}),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -41,8 +48,9 @@ export function RegisterPage(): JSX.Element {
     try {
       await registerUser(data.email, data.password);
       void navigate(`/${locale ?? 'en'}`);
-    } catch {
-      showToast({severity: 'error', summary: t('auth.registerFailed')});
+    } catch (error: unknown) {
+      const summary = resolveAuthErrorMessage(error, t, 'auth.registerFailed');
+      showToast({severity: 'error', summary});
     }
   };
 

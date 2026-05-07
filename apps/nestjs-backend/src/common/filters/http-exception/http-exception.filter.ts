@@ -5,6 +5,7 @@ type HttpErrorBody = {
   statusCode: number;
   message: string | string[];
   error?: string;
+  requestId?: string;
   details?: Record<string, unknown>;
 };
 
@@ -41,6 +42,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const body: HttpErrorBody = {statusCode, message};
     if (error) body.error = error;
+    if (request.id) body.requestId = request.id;
     if (details) body.details = {...details, path: request.url};
 
     response.status(statusCode).json(body);

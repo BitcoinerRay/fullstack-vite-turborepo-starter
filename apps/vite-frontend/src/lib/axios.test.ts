@@ -153,7 +153,7 @@ describe('axios interceptors', () => {
   });
 
   it('attempts a refresh and retries the original request on a fresh 401', async () => {
-    const postSpy = vi.spyOn(axiosInstance, 'post').mockResolvedValue({data: {}} as AxiosResponse);
+    const postSpy = vi.spyOn(axiosInstance, 'post').mockResolvedValue({data: {}});
     const retryResponse: AxiosResponse = {status: 200, statusText: 'OK', headers: {}, config: {headers: new AxiosHeaders()}, data: {ok: true}};
     const requestSpy = vi.spyOn(axiosInstance, 'request').mockResolvedValue(retryResponse);
 

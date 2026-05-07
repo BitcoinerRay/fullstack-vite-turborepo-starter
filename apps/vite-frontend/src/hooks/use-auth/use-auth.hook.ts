@@ -1,6 +1,6 @@
-import {useEffect} from 'react';
+import {useCallback, useEffect} from 'react';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {type UserDto} from '@next-nest-turbo-auth-boilerplate/shared';
+import {type AuthResponseDto, type UserDto} from '@next-nest-turbo-auth-boilerplate/shared';
 import {getMeApi} from '@/api/user.api';
 import {loginApi, logoutApi, registerApi} from '@/api/auth.api';
 import {useAuthStore} from '@/store/auth/auth.store';
@@ -38,21 +38,25 @@ export function useLogin(): {
 } {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const {mutateAsync, isPending} = useMutation({
     async mutationFn({email, password}: {email: string; password: string}) {
       return loginApi({email, password});
     },
-    async onSuccess(result) {
+    async onSuccess(result: AuthResponseDto) {
       queryClient.setQueryData(ME_QUERY_KEY, result.user);
     },
   });
 
-  return {
-    async login(email: string, password: string): Promise<void> {
-      await mutation.mutateAsync({email, password});
+  // Depend only on mutateAsync (stable across renders) so consumers can put
+  // login() into effect deps without triggering re-runs each render.
+  const login = useCallback(
+    async (email: string, password: string): Promise<void> => {
+      await mutateAsync({email, password});
     },
-    isPending: mutation.isPending,
-  };
+    [mutateAsync],
+  );
+
+  return {login, isPending};
 }
 
 export function useRegister(): {
@@ -61,28 +65,30 @@ export function useRegister(): {
 } {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const {mutateAsync, isPending} = useMutation({
     async mutationFn({email, password}: {email: string; password: string}) {
       return registerApi({email, password});
     },
-    async onSuccess(result) {
+    async onSuccess(result: AuthResponseDto) {
       queryClient.setQueryData(ME_QUERY_KEY, result.user);
     },
   });
 
-  return {
-    async register(email: string, password: string): Promise<void> {
-      await mutation.mutateAsync({email, password});
+  const register = useCallback(
+    async (email: string, password: string): Promise<void> => {
+      await mutateAsync({email, password});
     },
-    isPending: mutation.isPending,
-  };
+    [mutateAsync],
+  );
+
+  return {register, isPending};
 }
 
 export function useLogout(): {logout: () => Promise<void>; isPending: boolean} {
   const {clearAuth} = useAuthStore();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const {mutateAsync, isPending} = useMutation({
     mutationFn: logoutApi,
     onSuccess() {
       clearAuth();
@@ -90,10 +96,9 @@ export function useLogout(): {logout: () => Promise<void>; isPending: boolean} {
     },
   });
 
-  return {
-    async logout(): Promise<void> {
-      await mutation.mutateAsync();
-    },
-    isPending: mutation.isPending,
-  };
+  const logout = useCallback(async (): Promise<void> => {
+    await mutateAsync();
+  }, [mutateAsync]);
+
+  return {logout, isPending};
 }

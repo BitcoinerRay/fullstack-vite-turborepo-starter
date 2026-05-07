@@ -8,8 +8,8 @@
     "start:dev": "cross-env NODE_ENV=development nest start --watch",
     "start:debug": "cross-env NODE_ENV=development nest start --debug --watch",
     "start:prod": "cross-env NODE_ENV=production node dist/src/main",
-    "lint": "npm --prefix ../../packages/shared run build && npm --prefix ../../packages/db run build && xo",
-    "lint:fix": "npm --prefix ../../packages/shared run build && npm --prefix ../../packages/db run build && xo --fix",
+    "lint": "xo",
+    "lint:fix": "xo --fix",
     "type-check": "tsc --noEmit -p tsconfig.json",
     "test:unit": "jest --config ./test/jest-unit.json",
     "test:unit:watch": "jest --config ./test/jest-unit.json --watch",
@@ -32,7 +32,7 @@
     "@nestjs/throttler": "6.5.0",
     "@next-nest-turbo-auth-boilerplate/db": "*",
     "@next-nest-turbo-auth-boilerplate/shared": "*",
-    "axios": "1.13.5",
+    "axios": "^1.16.0",
     "bcrypt": "^6.0.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.3",
@@ -47,7 +47,7 @@
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
-    "uuid": "13.0.0"
+    "uuid": "^13.0.2"
   },
   "devDependencies": {
     "@nestjs/cli": "11.0.16",

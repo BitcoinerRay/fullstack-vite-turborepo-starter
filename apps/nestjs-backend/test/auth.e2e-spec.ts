@@ -39,6 +39,7 @@ type AuthServiceResult = {user: typeof userDto; accessToken: string; refreshToke
 describe('Auth flows (e2e)', () => {
   let app: INestApplication;
   let jwtGuardSpy: jest.SpiedFunction<JwtAuthGuard['canActivate']>;
+  const revokeMock = jest.fn(async (): Promise<void> => undefined);
 
   beforeAll(async () => {
     jwtGuardSpy = jest.spyOn(JwtAuthGuard.prototype, 'canActivate').mockImplementation((context: ExecutionContext) => {
@@ -75,6 +76,7 @@ describe('Auth flows (e2e)', () => {
 
               return {user: userDto, accessToken: 'rotated-token', refreshToken: 'rotated-refresh'};
             },
+            revoke: revokeMock,
           },
         },
         {
@@ -175,12 +177,15 @@ describe('Auth flows (e2e)', () => {
     expect(setCookie).toContain('refresh_token=;');
   });
 
-  it('clears both auth cookies on logout', async () => {
+  it('revokes the jti and clears both auth cookies on logout', async () => {
+    revokeMock.mockClear();
     const response = await fetch(`${await app.getUrl()}/api/v1/auth/logout`, {
       method: 'POST',
+      headers: {cookie: 'refresh_token=cookie-refresh'},
     });
 
     expect(response.status).toBe(204);
+    expect(revokeMock).toHaveBeenCalledWith('cookie-refresh');
     const setCookie = response.headers.get('set-cookie') ?? '';
     expect(setCookie).toContain('access_token=;');
     expect(setCookie).toContain('refresh_token=;');

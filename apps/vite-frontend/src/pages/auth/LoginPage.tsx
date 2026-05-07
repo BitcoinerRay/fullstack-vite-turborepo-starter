@@ -10,6 +10,7 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {useLogin} from '@/hooks/use-auth/use-auth.hook';
 import {useToast} from '@/hooks/use-toast/use-toast.hook';
+import {resolveAuthErrorMessage} from '@/lib/auth-error';
 
 const loginSchema = z.object({
   email: z.email(),
@@ -35,8 +36,9 @@ export function LoginPage(): JSX.Element {
     try {
       await login(data.email, data.password);
       void navigate(`/${locale ?? 'en'}`);
-    } catch {
-      showToast({severity: 'error', summary: t('auth.loginFailed')});
+    } catch (error: unknown) {
+      const summary = resolveAuthErrorMessage(error, t, 'auth.loginFailed');
+      showToast({severity: 'error', summary});
     }
   };
 
