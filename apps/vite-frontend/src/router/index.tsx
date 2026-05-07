@@ -4,7 +4,7 @@ import {MainLayout} from '@/layouts/MainLayout.tsx';
 import {BareLayout} from '@/layouts/BareLayout.tsx';
 import {ProvidersLayout} from '@/layouts/ProvidersLayout.tsx';
 import {PrivateRoute} from '@/router/PrivateRoute.tsx';
-import {LoadingAnimation} from '@/components/loading-animation/loading-animation.component';
+import {RouteBoundary} from '@/components/route-boundary/route-boundary.component';
 import {defaultLocale} from '@/i18n/constants.ts';
 import {getLocalePath} from '@/i18n/navigation.ts';
 
@@ -33,15 +33,11 @@ const NotFound = React.lazy(async () => {
   return {default: mod.NotFound};
 });
 
-function SuspenseWrapper({children}: {readonly children: React.ReactNode}): JSX.Element {
-  return <React.Suspense fallback={<LoadingAnimation />}>{children}</React.Suspense>;
-}
-
 function infoPageElement(pageKey: 'about' | 'contact' | 'imprint' | 'privacy' | 'terms'): JSX.Element {
   return (
-    <SuspenseWrapper>
+    <RouteBoundary>
       <InfoPage pageKey={pageKey} />
-    </SuspenseWrapper>
+    </RouteBoundary>
   );
 }
 
@@ -54,9 +50,9 @@ export const router = createBrowserRouter([
     path: '/:locale',
     element: <ProvidersLayout />,
     errorElement: (
-      <SuspenseWrapper>
+      <RouteBoundary>
         <ErrorBoundary />
-      </SuspenseWrapper>
+      </RouteBoundary>
     ),
     children: [
       {
@@ -66,9 +62,9 @@ export const router = createBrowserRouter([
             index: true,
             element: (
               <PrivateRoute>
-                <SuspenseWrapper>
+                <RouteBoundary>
                   <Home />
-                </SuspenseWrapper>
+                </RouteBoundary>
               </PrivateRoute>
             ),
           },
@@ -100,17 +96,17 @@ export const router = createBrowserRouter([
           {
             path: 'login',
             element: (
-              <SuspenseWrapper>
+              <RouteBoundary>
                 <LoginPage />
-              </SuspenseWrapper>
+              </RouteBoundary>
             ),
           },
           {
             path: 'register',
             element: (
-              <SuspenseWrapper>
+              <RouteBoundary>
                 <RegisterPage />
-              </SuspenseWrapper>
+              </RouteBoundary>
             ),
           },
         ],
@@ -120,9 +116,9 @@ export const router = createBrowserRouter([
   {
     path: '*',
     element: (
-      <SuspenseWrapper>
+      <RouteBoundary>
         <NotFound />
-      </SuspenseWrapper>
+      </RouteBoundary>
     ),
   },
 ]);
