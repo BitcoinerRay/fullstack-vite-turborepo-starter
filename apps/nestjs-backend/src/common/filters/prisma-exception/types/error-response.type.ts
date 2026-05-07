@@ -5,4 +5,5 @@ export type ErrorResponse = {
   message: string;
   timestamp: string;
   path: string;
+  requestId?: string;
 };

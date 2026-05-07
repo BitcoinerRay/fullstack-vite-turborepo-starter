@@ -36,6 +36,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
       message: 'Database error occurred',
       timestamp: new Date().toISOString(),
       path: request.url,
+      requestId: request.id,
     };
 
     if (exception instanceof PrismaClientKnownRequestError) {
@@ -54,7 +55,10 @@ export class PrismaExceptionFilter implements ExceptionFilter {
       errorResponse.message = 'Unknown database error';
     }
 
-    this.logger.error(`Prisma error on ${request.method} ${request.url}: ${exception.message}`, exception.stack);
+    this.logger.error(
+      `Prisma error on ${request.method} ${request.url} - ReqId: ${request.id ?? '-'}: ${exception.message}`,
+      exception.stack,
+    );
 
     response.status(errorResponse.statusCode).json(errorResponse);
   }

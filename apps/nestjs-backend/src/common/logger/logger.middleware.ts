@@ -36,18 +36,20 @@ export class LoggerMiddleware implements NestMiddleware {
   use(req: Request, response: Response, next: () => void): void {
     const {ip, method, originalUrl} = req;
     const startTime = Date.now();
+    const requestId = req.id ?? '-';
 
     response.on('finish', () => {
       const duration = Date.now() - startTime;
+      const summary = `[${method}] ${originalUrl} - Status: ${response.statusCode} - IP: ${ip} - ${duration}ms - ReqId: ${requestId}`;
 
       if (response.statusCode >= 200 && response.statusCode < 400) {
-        this.logger.log(`[${method}] ${originalUrl} - Status: ${response.statusCode} - IP: ${ip} - ${duration}ms`);
+        this.logger.log(summary);
       } else if (response.statusCode >= 400 && response.statusCode < 500) {
-        this.logger.warn(`[${method}] ${originalUrl} - Status: ${response.statusCode} - IP: ${ip} - ${duration}ms`);
+        this.logger.warn(summary);
         this.logger.warn(`Request Header: ${JSON.stringify(redactHeaders(req.headers))}`);
         this.logger.warn(`Request Body: ${JSON.stringify(redactBody(req.body))}`);
       } else if (response.statusCode >= 500) {
-        this.logger.error(`[${method}] ${originalUrl} - Status: ${response.statusCode} - IP: ${ip} - ${duration}ms`);
+        this.logger.error(summary);
         this.logger.error(`Request Header: ${JSON.stringify(redactHeaders(req.headers))}`);
         this.logger.error(`Request Body: ${JSON.stringify(redactBody(req.body))}`);
       }
@@ -55,7 +57,7 @@ export class LoggerMiddleware implements NestMiddleware {
 
     response.on('error', (err) => {
       const duration = Date.now() - startTime;
-      this.logger.error(`[${method}] ${originalUrl} - IP: ${ip} - ${duration}ms - Error: ${err.message}`);
+      this.logger.error(`[${method}] ${originalUrl} - IP: ${ip} - ${duration}ms - ReqId: ${requestId} - Error: ${err.message}`);
     });
 
     next();
