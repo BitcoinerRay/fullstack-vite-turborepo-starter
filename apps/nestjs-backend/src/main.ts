@@ -23,9 +23,15 @@ async function bootstrap(): Promise<void> {
 
   const isProduction = process.env.NODE_ENV === 'production';
 
-  // The API only ever returns JSON (plus the Swagger HTML page when enabled),
-  // so the CSP can be very restrictive. Swagger is allowed via 'self' + inline
-  // styles only when explicitly enabled.
+  // The API only ever returns JSON (plus the Swagger HTML page when enabled in
+  // non-production). In production we keep CSP tight even if someone forgets
+  // to set ENABLE_SWAGGER=false — Swagger UI can break, that's the point.
+  const allowInlineForSwagger = enableSwagger && !isProduction;
+  if (isProduction && enableSwagger) {
+    const bootstrapLogger = new Logger('bootstrap', {timestamp: true});
+    bootstrapLogger.warn('ENABLE_SWAGGER=true in production: keeping strict CSP, Swagger UI may not render.');
+  }
+
   app.use(
     helmet({
       contentSecurityPolicy: {
@@ -36,8 +42,8 @@ async function bootstrap(): Promise<void> {
           'form-action': ["'self'"],
           'frame-ancestors': ["'none'"],
           'img-src': ["'self'", 'data:'],
-          'script-src': enableSwagger ? ["'self'", "'unsafe-inline'"] : ["'none'"],
-          'style-src': enableSwagger ? ["'self'", "'unsafe-inline'"] : ["'none'"],
+          'script-src': allowInlineForSwagger ? ["'self'", "'unsafe-inline'"] : ["'self'"],
+          'style-src': allowInlineForSwagger ? ["'self'", "'unsafe-inline'"] : ["'self'"],
           'connect-src': ["'self'", frontendHost],
           'object-src': ["'none'"],
         },

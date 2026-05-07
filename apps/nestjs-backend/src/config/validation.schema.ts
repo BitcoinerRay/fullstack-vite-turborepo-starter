@@ -28,4 +28,13 @@ const validationSchemaMap: Record<ConfigKey, Joi.Schema> = {
   [ConfigKey.BCRYPT_SALT_ROUNDS]: Joi.number().integer().min(4).max(15).default(12),
 };
 
-export default Joi.object(validationSchemaMap);
+// At least one Postgres entrypoint must be configured. If using individual
+// fields instead of DATABASE_URL, the host implies the rest must be set too —
+// otherwise startup looks fine but Prisma fails at first query.
+export default Joi.object(validationSchemaMap)
+  .or(ConfigKey.DATABASE_URL, ConfigKey.POSTGRES_HOST)
+  .with(ConfigKey.POSTGRES_HOST, [
+    ConfigKey.POSTGRES_USER,
+    ConfigKey.POSTGRES_PASSWORD,
+    ConfigKey.POSTGRES_DB_NAME,
+  ]);

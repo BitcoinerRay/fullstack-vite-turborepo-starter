@@ -36,6 +36,7 @@ describe('AuthController', () => {
     register: jest.fn(async () => authResponse),
     login: jest.fn(async () => authResponse),
     refresh: jest.fn(async () => authResponse),
+    revoke: jest.fn(async () => undefined),
   } as unknown as AuthService;
 
   const controller = new AuthController(authService);
@@ -103,11 +104,13 @@ describe('AuthController', () => {
     expect(response.clearCookie).toHaveBeenCalledWith('refresh_token', {path: '/api/v1/auth'});
   });
 
-  it('clears both auth cookies on logout', () => {
+  it('revokes the refresh jti and clears both auth cookies on logout', async () => {
+    const request = buildRequest('logout-refresh');
     const response = buildResponse();
 
-    controller.logout(response);
+    await controller.logout(request, response);
 
+    expect(authService.revoke).toHaveBeenCalledWith('logout-refresh');
     expect(response.clearCookie).toHaveBeenCalledWith('access_token');
     expect(response.clearCookie).toHaveBeenCalledWith('refresh_token', {path: '/api/v1/auth'});
   });

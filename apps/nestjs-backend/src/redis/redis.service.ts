@@ -122,6 +122,41 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  /**
+   * Atomically read-and-delete a key. Returns true if the key existed and was
+   * consumed, false on miss or transport failure. Used for one-shot tokens
+   * (e.g. refresh-token jti rotation) where reusing a value must be detected.
+   */
+  async consumeKey(key: string): Promise<boolean> {
+    if (!this.publisher) {
+      return false;
+    }
+
+    try {
+      const previous = await this.publisher.getdel(key);
+      return previous !== null;
+    } catch (error) {
+      this.logger.warn(`Redis GETDEL failed for ${key}: ${(error as Error).message}`);
+      return false;
+    }
+  }
+
+  /**
+   * Mark a key as live with a TTL. Used to register a freshly minted refresh
+   * token jti so a later consumeKey() can verify it has not been used yet.
+   */
+  async recordKey(key: string, ttlSeconds: number): Promise<void> {
+    if (!this.publisher) {
+      return;
+    }
+
+    try {
+      await this.publisher.set(key, '1', 'EX', ttlSeconds);
+    } catch (error) {
+      this.logger.warn(`Redis SET (record) failed for ${key}: ${(error as Error).message}`);
+    }
+  }
+
   async publish<T>(channel: string, message: T): Promise<void> {
     const serialized = JSON.stringify(message);
     if (!this.publisher) {

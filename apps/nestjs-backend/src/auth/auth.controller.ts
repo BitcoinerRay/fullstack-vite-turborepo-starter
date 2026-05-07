@@ -64,7 +64,10 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({summary: 'Logout and clear session cookies'})
   @ApiResponse({status: 204, description: 'Logged out successfully'})
-  logout(@Res({passthrough: true}) res: Response): void {
+  async logout(@Req() req: Request, @Res({passthrough: true}) res: Response): Promise<void> {
+    const cookies = (req.cookies ?? {}) as Record<string, string | undefined>;
+    // Revoke the jti so a leaked refresh cookie can't be replayed after logout.
+    await this.authService.revoke(cookies[refreshTokenCookie]);
     this.clearAuthCookies(res);
   }
 

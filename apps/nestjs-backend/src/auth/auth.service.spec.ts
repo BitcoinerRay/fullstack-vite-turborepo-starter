@@ -5,6 +5,7 @@ import {type User} from '@next-nest-turbo-auth-boilerplate/db';
 import {RegisterDto, LoginDto, UserRole} from '@next-nest-turbo-auth-boilerplate/shared';
 import {compare, hash} from 'bcrypt';
 import {ConfigKey} from '../config/config-key.enum';
+import {RedisService} from '../redis/redis.service';
 import {UsersService} from '../users/users.service';
 import {AuthService} from './auth.service';
 
@@ -59,11 +60,17 @@ describe('AuthService', () => {
       throw new Error(`unexpected key ${key}`);
     }),
   } as unknown as ConfigService;
+  const redisService = {
+    recordKey: jest.fn(async () => undefined),
+    consumeKey: jest.fn(async () => true),
+  } as unknown as RedisService;
 
-  const service = new AuthService(usersService, jwtService, configService);
+  const service = new AuthService(usersService, jwtService, configService, redisService);
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.mocked(redisService.recordKey).mockResolvedValue(undefined);
+    jest.mocked(redisService.consumeKey).mockResolvedValue(true);
   });
 
   it('hashes the password, creates a user, and signs both tokens during registration', async () => {
@@ -109,8 +116,10 @@ describe('AuthService', () => {
     expect(jwtService.sign).not.toHaveBeenCalled();
   });
 
-  it('refresh rotates both tokens when the refresh token verifies', async () => {
-    jest.mocked(jwtService.verifyAsync).mockResolvedValue({sub: user.id, email: user.email, role: user.role});
+  it('refresh rotates both tokens when the refresh token verifies and the jti is still valid', async () => {
+    jest
+      .mocked(jwtService.verifyAsync)
+      .mockResolvedValue({sub: user.id, email: user.email, role: user.role, jti: 'old-jti'});
     jest.mocked(usersService.findById).mockResolvedValue(user);
 
     await expect(service.refresh('incoming-refresh')).resolves.toEqual({
@@ -120,7 +129,48 @@ describe('AuthService', () => {
     });
 
     expect(jwtService.verifyAsync).toHaveBeenCalledWith('incoming-refresh', {secret: refreshSecret});
+    expect(redisService.consumeKey).toHaveBeenCalledWith('refresh:jti:old-jti');
+    expect(redisService.recordKey).toHaveBeenCalledWith(
+      expect.stringMatching(/^refresh:jti:/u),
+      expect.any(Number),
+    );
     expect(usersService.findById).toHaveBeenCalledWith(user.id);
+  });
+
+  it('refresh rejects a token whose jti has already been consumed', async () => {
+    jest
+      .mocked(jwtService.verifyAsync)
+      .mockResolvedValue({sub: user.id, email: user.email, role: user.role, jti: 'consumed-jti'});
+    jest.mocked(redisService.consumeKey).mockResolvedValue(false);
+
+    await expect(service.refresh('replayed-refresh')).rejects.toThrow(
+      new UnauthorizedException('Refresh token already used'),
+    );
+    expect(usersService.findById).not.toHaveBeenCalled();
+  });
+
+  it('refresh rejects a token without a jti', async () => {
+    jest.mocked(jwtService.verifyAsync).mockResolvedValue({sub: user.id, email: user.email, role: user.role});
+
+    await expect(service.refresh('legacy-refresh')).rejects.toThrow(new UnauthorizedException('Invalid refresh token'));
+    expect(redisService.consumeKey).not.toHaveBeenCalled();
+  });
+
+  it('revoke consumes the jti when the refresh token verifies', async () => {
+    jest
+      .mocked(jwtService.verifyAsync)
+      .mockResolvedValue({sub: user.id, email: user.email, role: user.role, jti: 'logout-jti'});
+
+    await service.revoke('valid-refresh');
+
+    expect(redisService.consumeKey).toHaveBeenCalledWith('refresh:jti:logout-jti');
+  });
+
+  it('revoke is a no-op when no refresh token is supplied', async () => {
+    await service.revoke(undefined);
+
+    expect(jwtService.verifyAsync).not.toHaveBeenCalled();
+    expect(redisService.consumeKey).not.toHaveBeenCalled();
   });
 
   it('refresh rejects a missing refresh token', async () => {
