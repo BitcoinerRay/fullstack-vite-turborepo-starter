@@ -1,5 +1,5 @@
 import {Controller, Get, UseGuards} from '@nestjs/common';
-import {ApiTags, ApiOperation, ApiResponse, ApiBearerAuth} from '@nestjs/swagger';
+import {ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiCookieAuth} from '@nestjs/swagger';
 import {UserDto} from '@next-nest-turbo-auth-boilerplate/shared';
 import {JwtAuthGuard} from '../auth/guards/jwt-auth.guard';
 import {CurrentUser} from '../auth/decorators/current-user.decorator';
@@ -14,6 +14,7 @@ export class UsersController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiCookieAuth('access_token')
   @ApiOperation({summary: 'Get current authenticated user'})
   @ApiResponse({status: 200, type: UserDto})
   @ApiResponse({status: 401, description: 'Unauthorized'})

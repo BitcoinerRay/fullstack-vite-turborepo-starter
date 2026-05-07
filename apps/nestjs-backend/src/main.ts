@@ -11,10 +11,18 @@ import {HttpExceptionFilter} from './common/filters/http-exception/http-exceptio
 import {PrismaExceptionFilter} from './common/filters/prisma-exception/prisma-exception.filter';
 import {Logger as LoggerService} from './common/logger/logger.service';
 
+const headersTimeoutMs = 65_000;
+const requestTimeoutMs = 60_000;
+const keepAliveTimeoutMs = 60_000;
+
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
+
+  // Wire SIGTERM/SIGINT to NestJS lifecycle hooks so onModuleDestroy runs and
+  // existing connections drain before the process exits.
+  app.enableShutdownHooks();
 
   const configService = app.get(ConfigService);
   const frontendHost = configService.get<string>(ConfigKey.FRONTEND_HOST) ?? 'http://localhost:3000';
@@ -84,12 +92,29 @@ async function bootstrap(): Promise<void> {
       .setTitle('nest auth boilerplate')
       .setDescription('The nest auth boilerplate API description')
       .setVersion('1.0')
+      // Two ways to authenticate against this API: the SPA uses the
+      // httpOnly access_token cookie, and Swagger UI / direct API consumers
+      // can use a bearer token from /auth/login response.
+      .addCookieAuth('access_token', {type: 'apiKey', in: 'cookie', name: 'access_token'})
+      .addBearerAuth({type: 'http', scheme: 'bearer', bearerFormat: 'JWT'})
       .build();
     // npm workspaces can install Swagger and Nest core types at different paths.
     const swaggerApp = app as Parameters<typeof SwaggerModule.createDocument>[0];
     const documentFactory = (): OpenAPIObject => SwaggerModule.createDocument(swaggerApp, swaggerConfig);
     SwaggerModule.setup('api/docs', swaggerApp, documentFactory);
   }
+
+  const httpServer = app.getHttpServer() as {
+    headersTimeout: number;
+    requestTimeout: number;
+    keepAliveTimeout: number;
+  };
+  // Slowloris hardening: cap how long a client can hold an idle / partially
+  // sent request. Keep-alive is bounded so load balancers can recycle
+  // connections after a deploy.
+  httpServer.headersTimeout = headersTimeoutMs;
+  httpServer.requestTimeout = requestTimeoutMs;
+  httpServer.keepAliveTimeout = keepAliveTimeoutMs;
 
   await app.listen(port);
 
