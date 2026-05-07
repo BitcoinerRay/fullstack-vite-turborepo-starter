@@ -1,4 +1,4 @@
-import {type JSX} from 'react';
+import {memo, useCallback, useMemo, type JSX} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {useShallow} from 'zustand/react/shallow';
@@ -6,32 +6,45 @@ import {Button} from '@/components/ui/button.tsx';
 import {useLogout} from '@/hooks/use-auth/use-auth.hook';
 import {Link, getLocalePath} from '@/i18n/navigation.ts';
 import {cn} from '@/lib/utils.ts';
-import {useAuthStore} from '@/store/auth/auth.store';
+import {useAuthStore, type AuthSessionStatus} from '@/store/auth/auth.store';
 
-export function Header(): JSX.Element {
+// Defined outside the component so each render reuses the same shallow
+// selector — avoids tearing down + recreating the zustand subscription.
+const authSelector = (state: {
+  user: {email: string} | undefined;
+  isAuthenticated: boolean;
+  sessionStatus: AuthSessionStatus;
+}): {user: {email: string} | undefined; isAuthenticated: boolean} => ({
+  user: state.user,
+  isAuthenticated: state.isAuthenticated,
+});
+
+function HeaderComponent(): JSX.Element {
   const {t} = useTranslation();
   const {locale} = useParams<{locale: string}>();
   const location = useLocation();
   const navigate = useNavigate();
-  const {user, isAuthenticated} = useAuthStore(
-    useShallow((state) => ({user: state.user, isAuthenticated: state.isAuthenticated})),
-  );
+  const {user, isAuthenticated} = useAuthStore(useShallow(authSelector));
   const {logout, isPending} = useLogout();
   const homePath = getLocalePath(locale, '/');
-  const navigationItems = [
-    {label: t('components.header.links.about'), to: getLocalePath(locale, '/about')},
-    {label: t('components.header.links.contact'), to: getLocalePath(locale, '/contact')},
-    {label: t('components.header.links.privacy'), to: getLocalePath(locale, '/privacy')},
-  ];
 
-  if (isAuthenticated) {
-    navigationItems.unshift({label: t('components.header.links.dashboard'), to: homePath});
-  }
+  const navigationItems = useMemo(() => {
+    const items = [
+      {label: t('components.header.links.about'), to: getLocalePath(locale, '/about')},
+      {label: t('components.header.links.contact'), to: getLocalePath(locale, '/contact')},
+      {label: t('components.header.links.privacy'), to: getLocalePath(locale, '/privacy')},
+    ];
+    if (isAuthenticated) {
+      items.unshift({label: t('components.header.links.dashboard'), to: homePath});
+    }
 
-  const onLogout = async (): Promise<void> => {
+    return items;
+  }, [t, locale, isAuthenticated, homePath]);
+
+  const onLogout = useCallback(async (): Promise<void> => {
     await logout();
     void navigate(getLocalePath(locale, '/login'));
-  };
+  }, [logout, navigate, locale]);
 
   return (
     <header className="border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -86,3 +99,7 @@ export function Header(): JSX.Element {
     </header>
   );
 }
+
+// Header re-renders only when its slice (user/isAuthenticated) or props
+// change, sparing it from parent layout re-renders that don't affect it.
+export const Header = memo(HeaderComponent);
