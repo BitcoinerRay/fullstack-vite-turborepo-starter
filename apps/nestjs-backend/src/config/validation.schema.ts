@@ -31,10 +31,25 @@ const validationSchemaMap: Record<ConfigKey, Joi.Schema> = {
 // At least one Postgres entrypoint must be configured. If using individual
 // fields instead of DATABASE_URL, the host implies the rest must be set too —
 // otherwise startup looks fine but Prisma fails at first query.
+//
+// JWT and refresh secrets must differ so a leak of one cannot mint the other.
+// Joi's `disallow` referencing another key with `Joi.ref` enforces this at
+// boot rather than as a code review checkpoint.
 export default Joi.object(validationSchemaMap)
   .or(ConfigKey.DATABASE_URL, ConfigKey.POSTGRES_HOST)
   .with(ConfigKey.POSTGRES_HOST, [
     ConfigKey.POSTGRES_USER,
     ConfigKey.POSTGRES_PASSWORD,
     ConfigKey.POSTGRES_DB_NAME,
-  ]);
+  ])
+  .custom((value, helpers) => {
+    const jwtSecret = (value as Record<string, unknown>)[ConfigKey.JWT_SECRET];
+    const refreshSecret = (value as Record<string, unknown>)[ConfigKey.REFRESH_TOKEN_SECRET];
+    if (typeof jwtSecret === 'string' && typeof refreshSecret === 'string' && jwtSecret === refreshSecret) {
+      return helpers.error('any.invalid', {
+        message: 'JWT_SECRET and REFRESH_TOKEN_SECRET must differ; reusing one leaks both token classes.',
+      });
+    }
+
+    return value;
+  }, 'JWT secrets must differ');

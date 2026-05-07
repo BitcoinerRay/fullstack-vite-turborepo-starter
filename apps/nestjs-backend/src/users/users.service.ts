@@ -68,11 +68,24 @@ export class UsersService {
   }
 
   /**
-   * Returns the full user record including `passwordHash`.
-   * Only the auth flow should consume this; everything else must use {@link findById}.
+   * Returns the user record with the bare minimum needed for password
+   * verification + token signing. Only the auth flow should consume this;
+   * everything else must use {@link findById}.
    */
   async findByEmailWithPassword(email: string): Promise<User | undefined> {
-    return (await this.prisma.user.findUnique({where: {email}})) ?? undefined;
+    return (
+      (await this.prisma.user.findUnique({
+        where: {email},
+        select: {
+          id: true,
+          email: true,
+          role: true,
+          passwordHash: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      })) ?? undefined
+    );
   }
 
   async create(email: string, passwordHash: string): Promise<SafeUser> {

@@ -2,7 +2,32 @@ import {Injectable, NestMiddleware} from '@nestjs/common';
 import {Request, Response} from 'express';
 import {Logger} from './logger.service';
 
-const sensitiveHeaders = new Set(['authorization', 'cookie', 'set-cookie']);
+const sensitiveHeaders = new Set([
+  'authorization',
+  'cookie',
+  'set-cookie',
+  'proxy-authorization',
+  'x-api-key',
+  'x-auth-token',
+]);
+
+const sensitiveFields = new Set([
+  'password',
+  'confirmpassword',
+  'currentpassword',
+  'newpassword',
+  'passwordhash',
+  'token',
+  'accesstoken',
+  'refreshtoken',
+  'apikey',
+  'secret',
+  'authorization',
+  'creditcard',
+  'cardnumber',
+  'cvv',
+  'ssn',
+]);
 
 function redactHeaders(headers: Record<string, unknown>): Record<string, unknown> {
   const redacted: Record<string, unknown> = {};
@@ -18,10 +43,9 @@ function redactBody(body: unknown): unknown {
     return body;
   }
 
-  const sensitiveFields = new Set(['password', 'confirmPassword', 'passwordHash', 'token', 'secret']);
   const redacted: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
-    redacted[key] = sensitiveFields.has(key) ? '[REDACTED]' : value;
+    redacted[key] = sensitiveFields.has(key.toLowerCase()) ? '[REDACTED]' : value;
   }
 
   return redacted;
